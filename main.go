@@ -34,7 +34,7 @@ func main() {
 		head = head.Next
 		headCopy = headCopy.Next
 	}
-	return
+	// return
 
 	/*正则过滤*/
 	//s := ":请=求,错/误\n\r\t fsfafdf"
