@@ -4,6 +4,7 @@ import (
 	"c1/linklistcode"
 	"c1/sortcode"
 	"c1/treecode"
+	"c1/trietreecode"
 	"c1/utilcode"
 	"fmt"
 	"regexp"
@@ -18,6 +19,19 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	// trietreecode.TrieTree.Nodes = append(trietreecode.TrieTree.Nodes, &trietreecode.TrieTreeNode{})
+
+	trietreecode.Insert("activity")
+	trietreecode.Insert("act")
+	trietreecode.Insert("acd")
+
+	fmt.Printf("TrieTree: %v \n", trietreecode.PreCount("ac"))
+	trietreecode.Del("act")
+	fmt.Printf("TrieTree: %v \n", trietreecode.PreCount("ac"))
+	trietreecode.Del("activity")
+	fmt.Printf("TrieTree: %v \n", trietreecode.PreCount("ac"))
+
+	return
 
 	root := treecode.CreateCST(3)
 	treecode.PrintCst(root)
