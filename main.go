@@ -1,6 +1,7 @@
 package main
 
 import (
+	"c1/greedycode"
 	"c1/linklistcode"
 	"c1/sortcode"
 	"c1/treecode"
@@ -19,8 +20,22 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
-	// trietreecode.TrieTree.Nodes = append(trietreecode.TrieTree.Nodes, &trietreecode.TrieTreeNode{})
 
+	ss := []string{"jibw", "ji", "jp", "bw", "jibw"}
+	res := greedycode.MinDicOrder(ss)
+	fmt.Println(res)
+	return
+
+	ss = []string{"ba", "b"}
+	res = greedycode.MinDicOrder(ss)
+	fmt.Println(res)
+	return
+
+	ss = []string{"a", "ac", "ab"}
+	res = greedycode.MinDicOrder(ss)
+	fmt.Println(res)
+
+	// trietreecode.TrieTree.Nodes = append(trietreecode.TrieTree.Nodes, &trietreecode.TrieTreeNode{})
 	trietreecode.Insert("activity")
 	trietreecode.Insert("act")
 	trietreecode.Insert("acd")
