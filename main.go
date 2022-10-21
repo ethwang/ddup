@@ -20,6 +20,10 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	nums := []int{30, 1, 20, 4, 6}
+	lessMoney := greedycode.LessMoneySplitGold(nums)
+	fmt.Println(lessMoney)
+	return
 
 	ss := []string{"jibw", "ji", "jp", "bw", "jibw"}
 	res := greedycode.MinDicOrder(ss)
