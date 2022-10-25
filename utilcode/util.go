@@ -1,6 +1,7 @@
 package utilcode
 
 import (
+	"encoding/json"
 	"math/rand"
 	"time"
 )
@@ -40,4 +41,17 @@ func IsEqual(arr1, arr2 []int) bool {
 	}
 	return true
 
+}
+
+func MapToStruct(m map[string]interface{}, s interface{}) error {
+
+	arr, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(arr, &s)
+	if err != nil {
+		return err
+	}
+	return nil
 }

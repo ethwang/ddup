@@ -3,6 +3,7 @@ package main
 import (
 	"c1/greedycode"
 	"c1/linklistcode"
+	"c1/setcode"
 	"c1/sortcode"
 	"c1/treecode"
 	"c1/trietreecode"
@@ -20,6 +21,31 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+
+	testM := map[string]interface{}{
+		"start_price":         1,
+		"distance_unit_price": 4,
+		"time_unit_price":     6,
+	}
+	type testT struct {
+		StartPrice        int `json:"start_price"`
+		DistanceUnitPrice int `json:"distance_unit_price"`
+		TimeUnitPrice     int `json:"time_unit_price"`
+
+		BeginTime string `json:"begin_time"`
+		EndTime   string `json:"end_time"`
+	}
+	t := &testT{BeginTime: "111", EndTime: "222"}
+
+	utilcode.MapToStruct(testM, t)
+
+	fmt.Println(t)
+
+	return
+
+	set := setcode.NewSet()
+	set.Add("test")
+	fmt.Println(set.Has("test"))
 
 	ss := []string{"jibw", "ji", "jp", "bw", "jibw"}
 	res := greedycode.MinDicOrder(ss)
