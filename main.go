@@ -21,6 +21,10 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	nums := []int{30, 1, 20, 4, 6}
+	lessMoney := greedycode.LessMoneySplitGold(nums)
+	fmt.Println(lessMoney)
+	return
 
 	testM := map[string]interface{}{
 		"start_price":         1,
