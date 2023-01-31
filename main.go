@@ -1,6 +1,7 @@
 package main
 
 import (
+	"c1/enumcode"
 	"c1/greedycode"
 	"c1/linklistcode"
 	"c1/setcode"
@@ -21,6 +22,11 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+
+	s := "abs"
+	enumcode.AllSubsquences(s)
+	return
+
 	nums := []int{30, 1, 20, 4, 6}
 	lessMoney := greedycode.LessMoneySplitGold(nums)
 	fmt.Println(lessMoney)
