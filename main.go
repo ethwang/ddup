@@ -23,7 +23,12 @@ func RegFilter(str, regStr string) string {
 }
 func main() {
 
-	s := "abc"
+	s := "abcd"
+	sss := enumcode.AllSubStrs(s)
+	fmt.Println(sss)
+	return
+
+	s = "abc"
 	enumcode.Permutations(s)
 	return
 
