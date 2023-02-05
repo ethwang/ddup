@@ -4,6 +4,7 @@ import (
 	"c1/enumcode"
 	"c1/greedycode"
 	"c1/linklistcode"
+	"c1/misccode"
 	"c1/setcode"
 	"c1/sortcode"
 	"c1/treecode"
@@ -22,17 +23,27 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
-
-	s := "abcd"
-	sss := enumcode.AllSubStrs(s)
-	fmt.Println(sss)
+	enumcode.Nqueen(4)
 	return
 
-	s = "abc"
-	enumcode.Permutations(s)
-	return
+	misccode.F3([]int{-1, 0, 1, 2, -1, -4}, 0)
+	fmt.Println(misccode.F3([]int{-1, 0, 1, 2, -1, -4}, 0))
 
-	s = "abs"
+	//s := "abbccc"
+	//st := enumcode.Process4(s)
+	//fmt.Println(st)
+	//return
+
+	//s = "abcd"
+	//sss := enumcode.AllSubStrs(s)
+	//fmt.Println(sss)
+	//return
+
+	//s := "abc"
+	//enumcode.Permutations(s)
+	//return
+
+	s := "abc"
 	enumcode.AllSubsquences(s)
 	return
 
