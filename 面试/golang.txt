@@ -1,3 +1,10 @@
+问题记录:
 1.内存管理;
-2.垃圾回收;
-3.channel通信;
+    (1)内存分配
+        https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-memory-allocator/
+    (2)垃圾回收
+2.channel通信及原理;
+3.GPM模型;
+
+资源:
+1.https://www.processon.com/diagrams
