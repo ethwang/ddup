@@ -4,7 +4,6 @@ import (
 	"c1/enumcode"
 	"c1/greedycode"
 	"c1/linklistcode"
-	"c1/misccode"
 	"c1/setcode"
 	"c1/sortcode"
 	"c1/treecode"
@@ -23,27 +22,32 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	// n皇后
 	enumcode.Nqueen(4)
 	return
 
-	misccode.F3([]int{-1, 0, 1, 2, -1, -4}, 0)
-	fmt.Println(misccode.F3([]int{-1, 0, 1, 2, -1, -4}, 0))
+	// 三数之和
+	// fmt.Println(misccode.ThreeNumsSum([]int{-1, 0, 1, 2, -1, -4}, 0))
 
-	//s := "abbccc"
-	//st := enumcode.Process4(s)
-	//fmt.Println(st)
-	//return
+	// 字符串相同字符统计,空间复杂度O(1)
+	s := "abbccc"
+	st := enumcode.SameCharsCount(s)
+	fmt.Println(st)
+	return
 
-	//s = "abcd"
-	//sss := enumcode.AllSubStrs(s)
-	//fmt.Println(sss)
-	//return
+	// 字符串子串
+	s = "abcd"
+	sss := enumcode.AllSubStrs(s)
+	fmt.Println(sss)
+	return
 
-	//s := "abc"
-	//enumcode.Permutations(s)
-	//return
+	// 字符串全排列
+	s = "abc"
+	enumcode.Permutations(s)
+	return
 
-	s := "abc"
+	// 字符串子序列
+	s = "abc"
 	enumcode.AllSubsquences(s)
 	return
 
