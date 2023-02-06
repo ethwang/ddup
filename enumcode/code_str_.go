@@ -13,7 +13,8 @@ func numToChars(chs []byte, new *int, cnt int) {
 	}
 }
 
-func Process4(str string) string {
+// 字符串中相同字符数量统计，空间复杂度O(1)
+func SameCharsCount(str string) string {
 	// 1.字符串转化为字符数组；
 	// 2.遍历字符数组，统计相同字符个数并找到相同字符下的最后一个字符；
 	// 3.将字符个数重写回字符串最后一个字符位置，并删除多余字符;

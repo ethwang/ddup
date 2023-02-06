@@ -32,7 +32,7 @@ func F2(nums []int, target int) [][]int {
 	return res
 }
 
-func F3(nums []int, target int) [][]int {
+func ThreeNumsSum(nums []int, target int) [][]int {
 
 	res := make([][]int, 0)
 	sort.Ints(nums)
