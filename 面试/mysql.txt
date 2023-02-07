@@ -1,0 +1,8 @@
+问题记录:
+1.mysql和innodb介绍;
+2.为什么mysql使用b+树;
+
+
+资源:
+1.https://draveness.me/whys-the-design-mysql-b-plus-tree/
+2.https://draveness.me/mysql-innodb/

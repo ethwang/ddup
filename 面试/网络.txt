@@ -1,9 +1,29 @@
 1.TCP协议
     （1）TCP链接的三次握手https://draveness.me/whys-the-design-tcp-three-way-handshake/
         a.三次握手的过程以及客户端和服务端的相关状态；
+            A端向B端发送第一次握手信息(SYN包,包括seq),A端进入SYN_SENT状态;
+            B端收到A端SYN包,回复给A端ACK包(seq和ack),B端进入SYN_RECEIVED状态;
+            A端收到B端的ACK包,回复给B端ACK包(seq和ack),A和B进入ESTABLISHED状态;
         b.为啥是三次握手而不是两次握手？
+            防止历史上重复的初始化链接造成的混乱,防止TCP双方建立错误的链接;
+            双方确认彼此的初始化序列号;
+                * 序列号作用
+                    接收方可以通过序列号去重;
+                    发送方会在对应数据包未被ACK时重复发送;
+                    接收方可以通过序列号进行排序
+
     （2）TCP断开的四次挥手https://draveness.me/whys-the-design-tcp-time-wait/
-        a.主动断开链接的一方会出现time_wait状态，time_wait状态的作用？
+        a.四次挥手过程及客户端服务器端状态
+            客户端向服务端发送FIN包(seq,ack),客户端进入fin_wait1状态,服务端进入close_wait状态;
+            服务端回复客户端ACK包(seq,ack),客户端进入fin_wait2状态,服务端进入close_wait状态;
+
+            等待服务端把未传数据传给客户端....
+
+            服务端向客户端发送FIN包(seq,ack),客户端进入time_wait状态,服务端进入last_ack状态;
+            客户端回复服务端ACK包(seq,ack),服务端收到后变为close状态,2msl后客户端变为close状态;
+        b.主动断开链接的一方会出现time_wait状态，time_wait状态的作用？
+            保证链接正常关闭; 如果time_wait等待时间过短,当客户端再一次向服务端请求握手时,服务端回复rst,导致双方握手失败;
+            阻止链接中的延迟数据段;time_wait这个时长使链路中的所有数据段都失效
     （3）TCP保证可靠传输的方式
         a.重传机制(ack确认机制)https://draveness.me/whys-the-design-tcp-performance/
         b.tcp分段传输机制https://draveness.me/whys-the-design-tcp-segment-ip-packet/
@@ -14,3 +34,6 @@
     （6）TCP保证数据正确性的方式
         a.首部校验和
     （7）TCP粘包问题
+
+资源:
+https://draveness.me/whys-the-design/
