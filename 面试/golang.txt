@@ -2,6 +2,9 @@
 1.内存管理;
     (1)内存分配
         https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-memory-allocator/
+
+        a.内存空间包含两个重要区域:栈区和堆区;
+        b.内存管理分三个组件   
     (2)垃圾回收
 2.channel通信及原理;
 3.GPM模型;

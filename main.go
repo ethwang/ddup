@@ -4,6 +4,7 @@ import (
 	"c1/enumcode"
 	"c1/greedycode"
 	"c1/linklistcode"
+	"c1/misccode"
 	"c1/setcode"
 	"c1/sortcode"
 	"c1/treecode"
@@ -22,6 +23,11 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+
+	nums := []int{1, 4, 2, 6, 3, 0, 9}
+	misccode.QuickSort2(nums)
+	fmt.Println(nums)
+
 	// n皇后
 	enumcode.Nqueen(4)
 	return
@@ -51,7 +57,7 @@ func main() {
 	enumcode.AllSubsquences(s)
 	return
 
-	nums := []int{30, 1, 20, 4, 6}
+	nums = []int{30, 1, 20, 4, 6}
 	lessMoney := greedycode.LessMoneySplitGold(nums)
 	fmt.Println(lessMoney)
 	return
