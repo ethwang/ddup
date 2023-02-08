@@ -245,6 +245,7 @@ func heapify(nums []int, index, size int) {
 // 引入快速排序，荷兰国旗问题
 func Divide(nums []int, num int) {
 
+	// 方法1
 	for i := 0; i < len(nums); i++ {
 		if nums[i] > num {
 			for j := i + 1; j < len(nums); j++ {
@@ -255,7 +256,7 @@ func Divide(nums []int, num int) {
 			}
 		}
 	}
-
+	// 方法2
 	// 核心思想：划分区域,定义一个大于等于区域的索引范围
 	more := len(nums) - 1
 	for i := 0; i <= more; {

@@ -27,13 +27,13 @@
     （3）TCP保证可靠传输的方式
         a.重传机制(ack确认机制)https://draveness.me/whys-the-design-tcp-performance/
         b.tcp分段传输机制https://draveness.me/whys-the-design-tcp-segment-ip-packet/
-    （4）TCP流量控制的方式
-        a.滑动窗口
-    （5）TCP拥塞控制的方式https://draveness.me/whys-the-design-tcp-performance/
-        a.慢启动，拥塞避免算法;
-    （6）TCP保证数据正确性的方式
+        c.TCP流量控制的方式
+            滑动窗口
+        d.TCP拥塞控制的方式https://draveness.me/whys-the-design-tcp-performance/
+            慢启动，拥塞避免算法;
+    （4）TCP保证数据正确性的方式
         a.首部校验和
-    （7）TCP粘包问题
+    （5）TCP粘包问题
 
 资源:
 https://draveness.me/whys-the-design/
