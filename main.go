@@ -59,7 +59,7 @@ func main() {
 	enumcode.AllSubsquences(s)
 	return
 
-	nums := []int{30, 1, 20, 4, 6}
+	nums = []int{30, 1, 20, 4, 6}
 	lessMoney := greedycode.LessMoneySplitGold(nums)
 	fmt.Println(lessMoney)
 	return
