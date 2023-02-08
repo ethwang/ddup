@@ -24,6 +24,8 @@ func RegFilter(str, regStr string) string {
 }
 func main() {
 
+	misccode.ReversePairs([]int{1, 3, 2, 3, 1})
+
 	nums := []int{1, 4, 2, 6, 3, 0, 9}
 	misccode.QuickSort2(nums)
 	fmt.Println(nums)
