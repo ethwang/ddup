@@ -23,6 +23,7 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	misccode.LengthOfLongestSubstring("abcabcbb")
 
 	misccode.ReversePairs([]int{1, 3, 2, 3, 1})
 
