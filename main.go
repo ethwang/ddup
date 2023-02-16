@@ -24,6 +24,18 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	s := "abc"
+	enumcode.AllSubsquences(s)
+	return
+
+	s = "abc"
+	enumcode.Permutations(s)
+	return
+	//s1 := "abc"
+	//enumcode.AllSubsquences(s1)
+	fmt.Println(misccode.GenerateParenthesis(3))
+	fmt.Println(misccode.IsValid("()[]{}"))
+	misccode.LetterCombinations2("23")
 	queuecode.LevelOrder(nil)
 
 	misccode.LengthOfLongestSubstring("abcabcbb")
@@ -42,7 +54,7 @@ func main() {
 	// fmt.Println(misccode.ThreeNumsSum([]int{-1, 0, 1, 2, -1, -4}, 0))
 
 	// 字符串相同字符统计,空间复杂度O(1)
-	s := "abbccc"
+	s = "abbccc"
 	st := enumcode.SameCharsCount(s)
 	fmt.Println(st)
 	return
