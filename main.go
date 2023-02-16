@@ -5,6 +5,7 @@ import (
 	"c1/greedycode"
 	"c1/linklistcode"
 	"c1/misccode"
+	"c1/queuecode"
 	"c1/setcode"
 	"c1/sortcode"
 	"c1/treecode"
@@ -23,6 +24,8 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	queuecode.LevelOrder(nil)
+
 	misccode.LengthOfLongestSubstring("abcabcbb")
 
 	misccode.ReversePairs([]int{1, 3, 2, 3, 1})
