@@ -24,6 +24,10 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	stt := misccode.LongestDupSubstring("")
+	fmt.Println(stt)
+	return
+
 	misccode.LongestConsecutive([]int{100, 4, 200, 1, 3, 2})
 	s := "leetcode"
 	wordDict := []string{"leet", "code"}
