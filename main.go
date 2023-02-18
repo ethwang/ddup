@@ -24,6 +24,7 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	misccode.LongestConsecutive([]int{100, 4, 200, 1, 3, 2})
 	s := "leetcode"
 	wordDict := []string{"leet", "code"}
 	fmt.Println(misccode.WordBreak(s, wordDict))
