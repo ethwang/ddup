@@ -24,7 +24,12 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
-	s := "abc"
+	s := "leetcode"
+	wordDict := []string{"leet", "code"}
+	fmt.Println(misccode.WordBreak(s, wordDict))
+	return
+
+	s = "abc"
 	enumcode.AllSubsquences(s)
 	return
 
