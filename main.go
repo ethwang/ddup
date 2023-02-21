@@ -24,6 +24,8 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	misccode.CanPartitionKSubsets14([]int{4, 3, 2, 3, 5, 2, 1}, 4)
+	misccode.Exist([][]byte{{'a', 'b', 'c'}, {'a', 'e', 'd'}, {'a', 'f', 'g'}}, "abcdefg")
 	stt := misccode.LongestDupSubstring("")
 	fmt.Println(stt)
 	return
