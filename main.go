@@ -24,6 +24,10 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	stt := misccode.LongestDupSubstring("")
+	fmt.Println(stt)
+	return
+	misccode.SubsetsWithDup([]int{1, 2, 2})
 	//stt := misccode.LongestDupSubstring("")
 	//fmt.Println(stt)
 	//return
