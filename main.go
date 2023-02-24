@@ -24,6 +24,7 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	misccode.LengthOfLIS([]int{10, 9, 2, 5, 3, 7, 101, 18})
 	misccode.NumIslands([][]byte{{'1', '1', '1', '1', '0'}, {'1', '1', '0', '1', '0'}, {'1', '1', '0', '0', '0'}, {'0', '0', '0', '0', '0'}})
 	misccode.CanPartitionKSubsets14([]int{4, 3, 2, 3, 5, 2, 1}, 4)
 	misccode.Exist([][]byte{{'a', 'b', 'c'}, {'a', 'e', 'd'}, {'a', 'f', 'g'}}, "abcdefg")
