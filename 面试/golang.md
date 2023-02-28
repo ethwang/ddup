@@ -92,13 +92,18 @@
     1. 获取或者创建新的goroutine结构体；
     2. 将传入的参数移到goroutine的栈上；
     3. 更新goroutine结构体中的参数,包括栈指针，程序计数器并更新其状态到_Grunnable。
-  - 运行队列
+  - 加入运行队列
     1. 如果本地队列(P)有剩余空间，将goroutine加入处理器(P)持有的本地队列；如果本地队列没有剩余空间，将goroutine加入调度器持有的全局队列。
   - 调度循环
     1. 调度器会从以下几个地方查找待执行的goroutine:
        1. 当全局队列中有待执行的goroutine时，会有一定几率从全局队列中查找可运行的goroutine；
        2. 从处理器本地队列中查找待执行的goroutine；
        3. 如果上述两种方式都没有获取到goroutine，会通过窃取的方式从其他P本地队列中查找待执行的goroutine；
+    2. 执行获取到的goroutine,将goroutine调度到当前线程上
+       1. 从gobuf中去取出exit函数的程序计数器和待执行用户函数的程序计数器放到关联线程的执行栈上
+       2. 线程开始执行用户函数，用户函数执行完后会去执行exit函数
+       3. exit函数会将goroutine转换为dead状态；清除goroutine中的相关字段；移除goroutine和线程的关联并将gouroutine加入到空闲列表中
+       4. 最后exit函数会重新调用调度方法触发新一轮的goroutine调度
 4. 如果运行中的goroutine发生挂起或者发生系统调用，会怎么处理? 
    - 会触发调度(调度器会重新选择goroutine在线程上执行)
       1. 主动挂起触发调度的流程:

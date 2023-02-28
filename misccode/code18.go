@@ -1,5 +1,10 @@
 package misccode
 
+import (
+	"context"
+	"time"
+)
+
 func LengthOfLIS(nums []int) int {
 
 	path := make([]int, 0)
@@ -21,4 +26,5 @@ func backtracking18(startIndex int, nums []int, path []int, length *int) {
 			path = path[:len(path)-1]
 		}
 	}
+	context.WithDeadline(context.Background(), time.Now())
 }
