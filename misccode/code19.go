@@ -1,5 +1,7 @@
 package misccode
 
+import "math"
+
 func Trap(height []int) int {
 
 	count := 0
@@ -52,7 +54,7 @@ const MIN_INT = ^MAX_INT
 
 func min(nums ...int) int {
 
-	minNum := MAX_INT
+	minNum := math.MaxInt
 	for _, v := range nums {
 		if v < minNum {
 			minNum = v
@@ -61,7 +63,7 @@ func min(nums ...int) int {
 	return minNum
 }
 func max(nums ...int) int {
-	maxNum := MIN_INT
+	maxNum := math.MinInt
 	for _, v := range nums {
 		if v > maxNum {
 			maxNum = v
