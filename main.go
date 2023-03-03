@@ -24,6 +24,7 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	misccode.MaxProduct([]int{2, 3, -2, 4})
 	misccode.Merge([][]int{{2, 3}, {2, 2}, {3, 3}, {1, 3}, {5, 7}, {2, 2}, {4, 6}})
 
 	misccode.LengthOfLIS([]int{10, 9, 2, 5, 3, 7, 101, 18})
