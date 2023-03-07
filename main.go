@@ -24,6 +24,8 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	misccode.DecodeString("3[a]2[bc]")
+
 	fmt.Println(misccode.MaxValue([]int{1, 3, 4}, []int{15, 20, 30}, 4))
 	misccode.MaximalSquare([][]byte{{'1', '0', '1', '0', '0'}, {'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}})
 	misccode.MaxProduct([]int{2, 3, -2, 4})
