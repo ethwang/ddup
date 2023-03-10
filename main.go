@@ -24,6 +24,9 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	misccode.ShortestSubarray([]int{17, 85, 93, -45, -21}, 150)
+	misccode.MinSubArrayLen(7, []int{2, 3, 1, 2, 4, 3})
+	misccode.NumberOfSubarrays([]int{2, 2, 2, 1, 2, 2, 1, 2, 2, 2}, 2)
 	misccode.Subsets([]int{1, 2, 3})
 	misccode.SliceT()
 	misccode.ReconstructQueue([][]int{{7, 0}, {4, 4}, {7, 1}, {5, 0}, {6, 1}, {5, 2}})
