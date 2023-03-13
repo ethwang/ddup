@@ -24,6 +24,9 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	misccode.MinSubArrayLen3(7, []int{2, 3, 1, 2, 4, 3})
+	misccode.MinSubArrayLen2(15, []int{1, 2, 3, 4, 5})
+	misccode.FindAnagrams("ababababab", "aab")
 	misccode.ShortestSubarray([]int{17, 85, 93, -45, -21}, 150)
 	misccode.MinSubArrayLen(7, []int{2, 3, 1, 2, 4, 3})
 	misccode.NumberOfSubarrays([]int{2, 2, 2, 1, 2, 2, 1, 2, 2, 2}, 2)
