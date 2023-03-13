@@ -1,6 +1,7 @@
 ### 资料
 1. 共识算法概览:https://draveness.me/consensus/
 2. raft算法细节,待看https://raft.github.io/
+3. 深入raft协议https://juejin.cn/post/6907151199141625870
 
 ### 问题:
 1. 分布式系统节点通信有两种：共享内存和消息传递？分别是怎么实现的？
