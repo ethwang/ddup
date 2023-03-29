@@ -22,7 +22,7 @@
       - channel是goroutine之间的通信的媒介
     - 设计原理  
         - goroutine可以使用共享内存加互斥锁进行通信，同时也提供了另一种并发模型-csp模型。goroutine和channel分别对应csp中的实体和传递信息的媒介，goroutine之间会通过channel传递数据
-        - channel运行时内部数据结构是hchan,该结构中包含了用于保护成员变量的互斥锁，channel是一个用于同步和通信的有锁队列
+        - channel运行时内部数据结构是hchan(循环队列+双向链表(阻塞的goroutine链表)),该结构中包含了用于保护成员变量的互斥锁，channel是一个用于同步和通信的有锁队列
     - 数据结构
       - channel运行时使用hchan结构体表示
       - hchan中有一个循环队列和两个双向链表
