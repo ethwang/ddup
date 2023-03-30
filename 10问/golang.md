@@ -124,3 +124,11 @@
     - [参考](https://blog.csdn.net/bestzy6/article/details/119981699)
 
 12. goroutine栈扩缩容
+13. map原理
+    1. 结构体
+    2. 新增元素
+    3. 查找元素
+    4. 扩容
+14. slice原理
+    1. 结构体
+    2. 扩容
