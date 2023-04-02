@@ -24,6 +24,8 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	misccode.Insert()
+	misccode.SearchInsert([]int{1, 2, 3, 4, 5}, 6)
 	fmt.Println(misccode.MaxSum([]int{-2, 1, -3, 4, -1, 2, 1, -5, 4}))
 
 	misccode.MinSubArrayLen3(7, []int{2, 3, 1, 2, 4, 3})
