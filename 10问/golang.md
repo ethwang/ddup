@@ -28,11 +28,12 @@
         - channel运行时内部数据结构是hchan(循环队列+双向链表(阻塞的goroutine链表)),该结构中包含了用于保护成员变量的互斥锁，channel是一个用于同步和通信的有锁队列
     - 数据结构
       - channel运行时使用hchan结构体表示
-      - hchan中有一个循环队列和两个双向链表
+      - hchan中持有互斥锁，一个循环队列和两个双向链表
         - 循环队列:存放的缓冲区的数据指针
         - 双向链表:当前channel缓冲区不足而阻塞的goroutine列表
             - sendq:发送数据时并没有找到接收方并且缓冲区已满，此时goroutine会将自己加入到channel的sendq队列中
             - recvq:
+        - 互斥锁
     - 创建channel(make->makechan)
       - 如果当前channel不存在缓冲区，只会为hchan结构体分配(mallocgc)一块内存空间
       - 如果当前channel存在缓冲区且缓存区存放的数据类型不是指针,会为hchan结构体和底层数组分配一块连续的内存空间
@@ -59,10 +60,13 @@
         - 唤醒rendq和recvq中所有被阻塞的goroutine
 
 5. golang new和make的区别；
-    - make的作用是初始化内置数据结构(切片，哈希表和channel)
-    - new的作用是根据传入的类型分配一块内存空间并返回指向这块内存空间的指针
+    - make的作用是初始化内置数据结构(切片，哈希表和channel):申请内存+初始化
+      - make([]int,0,100):make slice是返回一个包含data,cap和len的结构体
+      - make(map[int]bool):make map返回一个hmap结构体指针
+      - make(chan int,5):make channel返回一个hchan结构体的指针
+    - new的作用是根据传入的类型分配一块内存空间并返回指向这块内存空间的指针:申请内存+置为零值
 
-8. go context原理(context为同一个任务的多个goroutine之间提供退出信号通知和数据传递的功能)
+6. go context原理(context为同一个任务的多个goroutine之间提供退出信号通知和数据传递的功能)
     - 一个接口(四个待实现的方法)
         - Deadline()
         - Done()
@@ -81,7 +85,7 @@
         - WithTimeout:可以创建timerctx,传入截止时间段
         - WithValue:附加键值对信息向下传递
 
-9. go mutex原理(读写互斥锁,同一时间只能有一个goroutine抢占锁，其他goroutine等待锁释放)
+7. go mutex原理(读写互斥锁,同一时间只能有一个goroutine抢占锁，其他goroutine等待锁释放)
     - 结构体
       - state:存储互斥锁的状态。加锁解锁都是通过atomic包提供的函数原子性操作该字段。
       - sema:用作信号量,主要用作等待队列。
@@ -123,12 +127,12 @@
         - 失败
           - 继续自旋检查，释放之前唤醒的标识位
 
-11. 切片传参问题(append会引发异常):切片传参是值传递,会复制一个相同的slice结构体，复制原切片结构体中的底层数组指针，长度，容量;所以复制出来的切片结构体和原切片结构体中的底层数组指针都是同一个, 会引发一些异常。
+8.  切片传参问题(append会引发异常):切片传参是值传递,会复制一个相同的slice结构体，复制原切片结构体中的底层数组指针，长度，容量;所以复制出来的切片结构体和原切片结构体中的底层数组指针都是同一个, 会引发一些异常。
   [参考](https://blog.csdn.net/bestzy6/article/details/119981699)
 
-12. goroutine栈扩缩容
+1.  goroutine栈扩缩容
 
-13. map原理
+2.  map原理
     1. 结构体:hmap
        1. 元素个数
        2. 桶数量
@@ -160,7 +164,7 @@
   [参考1](https://zhuanlan.zhihu.com/p/495998623)
   [参考2](https://golang.design/go-questions/map/assign/)
 
-14.  slice原理
+1.   slice原理
     1. 结构体:slice
        1. 数组指针
        2. 长度
@@ -168,7 +172,7 @@
     2. 扩容
   [参考](https://halfrost.com/go_slice/)
 
-15.  基于信号的抢占式调度原理
+1.   基于信号的抢占式调度原理
     1. 线程注册信号处理函数；
     2. sysmon线程检测到执行时间过长的goroutine或者gc stw时，会向响应的线程发送信号；
     3. 线程收到信号后，内核执行信号注册函数。注册函数的主要作用是：将抢占函数插入到当前goroutine运行位置； 
