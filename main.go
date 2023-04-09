@@ -24,6 +24,19 @@ func RegFilter(str, regStr string) string {
 	return newStr
 }
 func main() {
+	tTreeNodes := []*misccode.TreeNode{}
+	var ttn *misccode.TreeNode
+	tTreeNodes = append(tTreeNodes, ttn)
+	fmt.Println(len(tTreeNodes[1:1]))
+	fmt.Println(len(tTreeNodes[1:]))
+
+	rt := &misccode.TreeNode{Val: 1}
+	rt.Left = &misccode.TreeNode{Val: 2}
+	rt.Right = &misccode.TreeNode{Val: 5}
+	rt.Left.Left = &misccode.TreeNode{Val: 3}
+	rt.Left.Right = &misccode.TreeNode{Val: 4}
+	rt.Right.Right = &misccode.TreeNode{Val: 6}
+	misccode.Flatten(rt)
 	misccode.Insert()
 	misccode.SearchInsert([]int{1, 2, 3, 4, 5}, 6)
 	fmt.Println(misccode.MaxSum([]int{-2, 1, -3, 4, -1, 2, 1, -5, 4}))

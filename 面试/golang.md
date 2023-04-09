@@ -138,3 +138,4 @@
          1. 当系统调用时，会进入系统调用前的准备工作和系统调用后的收尾工作；
          2. 准备工作包括：保存当前当前程序的栈信息;更新gouroutine状态到系统调用阻塞状态，M陷入系统调用等待返回;将P和M分离;
          3. 收尾工作：系统调用结束为goroutine重新分配资源，寻找一个用于执行当前goroutine的处理器P
+  [go调度器详解](https://mp.weixin.qq.com/mp/homepage?__biz=MzU1OTg5NDkzOA==&hid=1&sn=8fc2b63f53559bc0cee292ce629c4788&scene=25#wechat_redirect)
