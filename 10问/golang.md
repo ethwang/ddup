@@ -1,24 +1,24 @@
+## 问题
 1. golang内存分配机制；
 2. golang垃圾回收机制；
 3. golang调度器&GPM模型；
-4. golang channel原理;
+4. golang csp并发模型及channel原理;
 5. golang new和make的区别；
-6. golang并发机制和csp并发模型;
-7. go标准库http原理；
-8. go context原理；
-9. go mutex原理
-10. go如何实现map并发操作的？
-11. 切片传参
-12. goroutine栈扩缩容
-13. map原理
-14. slice原理
-15. 基于信号的抢占式调度原理
+6. go context原理；
+7. go mutex原理
+8.  切片传参
+9.  map原理
+10. slice原理
+11. 基于信号的抢占式调度原理
+12. go http原理
+13. go 实现map并发
+14. goroutine栈扩缩容
 
 
 
 
 
-
+## 解答
 
 4. golang channel原理;
     - 作用
@@ -26,7 +26,7 @@
     - 设计原理  
         - goroutine可以使用共享内存加互斥锁进行通信，同时也提供了另一种并发模型-csp模型。goroutine和channel分别对应csp中的实体和传递信息的媒介，goroutine之间会通过channel传递数据
         - channel运行时内部数据结构是hchan(循环队列+双向链表(阻塞的goroutine链表)),该结构中包含了用于保护成员变量的互斥锁，channel是一个用于同步和通信的有锁队列
-    - 数据结构
+    - 数据结构(循环队列+双向链表+互斥锁)
       - channel运行时使用hchan结构体表示
       - hchan中持有互斥锁，一个循环队列和两个双向链表
         - 循环队列:存放的缓冲区的数据指针
@@ -127,12 +127,11 @@
         - 失败
           - 继续自旋检查，释放之前唤醒的标识位
 
-8.  切片传参问题(append会引发异常):切片传参是值传递,会复制一个相同的slice结构体，复制原切片结构体中的底层数组指针，长度，容量;所以复制出来的切片结构体和原切片结构体中的底层数组指针都是同一个, 会引发一些异常。
+8. 切片传参问题(append会引发异常):切片传参是值传递,会复制一个相同的slice结构体，复制原切片结构体中的底层数组指针，长度，容量;所以复制出来的切片结构体和原切片结构体中的底层数组指针都是同一个, 会引发一些异常。
   [参考](https://blog.csdn.net/bestzy6/article/details/119981699)
 
-1.  goroutine栈扩缩容
 
-2.  map原理
+9. map原理
     1. 结构体:hmap
        1. 元素个数
        2. 桶数量
@@ -164,7 +163,7 @@
   [参考1](https://zhuanlan.zhihu.com/p/495998623)
   [参考2](https://golang.design/go-questions/map/assign/)
 
-1.   slice原理
+10. slice原理
     1. 结构体:slice
        1. 数组指针
        2. 长度
@@ -172,7 +171,7 @@
     2. 扩容
   [参考](https://halfrost.com/go_slice/)
 
-1.   基于信号的抢占式调度原理
+11. 基于信号的抢占式调度原理
     1. 线程注册信号处理函数；
     2. sysmon线程检测到执行时间过长的goroutine或者gc stw时，会向响应的线程发送信号；
     3. 线程收到信号后，内核执行信号注册函数。注册函数的主要作用是：将抢占函数插入到当前goroutine运行位置； 
@@ -181,4 +180,4 @@
        2. 将当前goroutine与执行它的线程分离
        3. 将当前goroutine放入全局可运行队列
        4. 调用schedule函数进入循环调度 
-  [参考](https://cloud.tencent.com/developer/article/1836265)
+  [*参考](https://cloud.tencent.com/developer/article/1836265)

@@ -8,7 +8,8 @@
 
 
 
-
+6. 虚拟内存管理
+   - [*参考](https://xiaolincoding.com/os/3_memory/vmem.html#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98)
 7. 用户态和内核态
     - 用户态：运行用户程序
     - 内核态：运行操作系统
