@@ -10,9 +10,10 @@
 9.  map原理
 10. slice原理
 11. 基于信号的抢占式调度原理
-12. go http原理
-13. go 实现map并发
-14. goroutine栈扩缩容
+12. go defer原理
+13. go http原理
+14. go 实现map并发
+15. goroutine栈扩缩容
 
 
 
@@ -181,3 +182,11 @@
        3. 将当前goroutine放入全局可运行队列
        4. 调用schedule函数进入循环调度 
   [*参考](https://cloud.tencent.com/developer/article/1836265)
+12. go defer原理
+    1. defer用作延迟函数调用,return执行顺序是: 设置返回值->执行defer->ret
+    2. _defer结构体会保存执行延迟函数的信息:
+       1. sp函数栈指针;
+       2. pc程序计数器;
+       3. fn函数地址;
+       4. link指针,链接多个defer
+    3. 每个goroutine结构中有一个defer指针指向defer的单链表，每次申明一个defer时就将defer插入到单链表的表头，每次执行defer时就从单链表表头取出一个defer执行。(后进先出)
