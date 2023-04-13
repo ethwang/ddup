@@ -23,7 +23,26 @@ func RegFilter(str, regStr string) string {
 	newStr := reg.ReplaceAllString(str, "")
 	return newStr
 }
+func test() (i int) {
+	defer func() {
+		i++
+	}()
+	return
+}
+func test2() int {
+	var i int
+	defer func() {
+		i++
+	}()
+
+	return i
+}
+
 func main() {
+
+	misccode.SearchX([]int{1, 2, 3, 5, 4, 2})
+	fmt.Println(test2())
+	fmt.Println(test())
 	tTreeNodes := []*misccode.TreeNode{}
 	var ttn *misccode.TreeNode
 	tTreeNodes = append(tTreeNodes, ttn)
