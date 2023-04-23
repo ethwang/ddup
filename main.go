@@ -40,6 +40,7 @@ func test2() int {
 
 func main() {
 
+	misccode.ThreeSumClosest([]int{-1, 2, 1, -4}, 1)
 	misccode.SearchX([]int{1, 2, 3, 5, 4, 2})
 	fmt.Println(test2())
 	fmt.Println(test())
