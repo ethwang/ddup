@@ -1,46 +1,38 @@
 package misccode
 
-func Rotate1(matrix [][]int) {
-	n := len(matrix)
-	newMatrix := make([][]int, n)
-	for i := 0; i < n; i++ {
-		newMatrix[i] = make([]int, n)
+func isMatch(s string, p string) bool {
+	if s == "" && p == "" {
+		return true
 	}
-
-	for i := 0; i < n; i++ {
-		for j := 0; j < n; j++ {
-			newMatrix[i][j] = matrix[j][n-i-1]
+	if s != "" && p == "" {
+		return false
+	}
+	if s == "" && p != "" {
+		if len(p) == 2 && p[1] == '*' {
+			return true
 		}
+		return false
 	}
-	copy(matrix, newMatrix)
-}
+	dp := make([][]bool, len(s)+1)
+	for i := 0; i < len(dp); i++ {
+		dp[i] = make([]bool, len(p))
+	}
+	dp[0][0] = true
 
-func Rotate2(matrix [][]int) {
-	n := len(matrix)
-
-	if n%2 == 0 {
-
-		for i := 0; i < (n / 2); i++ {
-			for j := 0; j < (n / 2); j++ {
-
-				tmp := matrix[i][j]
-				matrix[i][j] = matrix[n-j-1][i]
-				matrix[n-j-1][i] = matrix[n-i-1][n-j-1]
-				matrix[n-i-1][n-j-1] = matrix[j][n-i-1]
-				matrix[j][n-i-1] = tmp
+	// dp[i][j]表示s[0,i-1]和p[0,j-1]是否匹配
+	for i := 1; i <= len(s); i++ {
+		for j := 1; j <= len(p); j++ {
+			if s[i-1] == p[j-1] || p[j-1] == '.' {
+				dp[i][j] = dp[i-1][j-1]
 			}
-		}
-	} else {
-
-		for i := 0; i < (n-1)/2; i++ {
-			for j := 0; j < (n+1)/2; j++ {
-				tmp := matrix[i][j]
-				matrix[i][j] = matrix[n-j-1][i]
-				matrix[n-j-1][i] = matrix[n-i-1][n-j-1]
-				matrix[n-i-1][n-j-1] = matrix[j][n-i-1]
-				matrix[j][n-i-1] = tmp
-
+			if s[i-1] != p[j-1] && p[j-1] == '*' {
+				if p[j-2] == s[i-1] || p[j-2] == '.' {
+					dp[i][j] = dp[i-1][j-2] || dp[i][j-2] || dp[i-1][j]
+				} else {
+					dp[i][j] = dp[i][j-2]
+				}
 			}
 		}
 	}
+	return dp[len(s)][len(p)]
 }

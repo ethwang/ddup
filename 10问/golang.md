@@ -14,6 +14,7 @@
 13. go http原理
 14. go 实现map并发
 15. goroutine栈扩缩容
+16. go 定时器原理和坑
 
 
 
@@ -190,3 +191,6 @@
        3. fn函数地址;
        4. link指针,链接多个defer
     3. 每个goroutine结构中有一个defer指针指向defer的单链表，每次申明一个defer时就将defer插入到单链表的表头，每次执行defer时就从单链表表头取出一个defer执行。(后进先出)
+
+16. go 定时器原理和坑
+    [参考](https://pengrl.com/p/1785/)
