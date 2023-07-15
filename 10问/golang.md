@@ -194,3 +194,10 @@
 
 16. go 定时器原理和坑
     [参考](https://pengrl.com/p/1785/)
+
+
+
+17. make slice,map,channel对比
+    1. make slice 返回的是slice实体
+    2. make map 返回的是map指针
+    3. make channel 返回的是channel指针 

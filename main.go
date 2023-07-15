@@ -193,7 +193,26 @@ var FamilyBoxResources = FamilyBoxResourcesT{
 
 var FamilyLevelConfigMap map[int32]FamilyTaskBoxGift
 
+func ctxx(ctx context.Context) context.Context {
+	ctx = context.WithValue(ctx, "ddd", 222)
+	return ctx
+}
 func main() {
+	fmt.Printf("%T\n", make([]int, 0))
+	fmt.Printf("%T\n", make(map[int]int))
+	fmt.Printf("%T\n", make(chan int))
+	i := 0
+	fmt.Printf("%T\n", &i)
+
+	fmt.Println(len(strings.Split("ga", ",")))
+	fmt.Println(len(strings.Split("falkjg", ",")))
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "ddd", 111)
+	//ctx = context.WithValue(ctx, "ddd", 222)
+	ctx = ctxx(ctx)
+	ctxx, _ := context.WithTimeout(ctx, time.Duration(10))
+	fmt.Println(ctxx.Value("ddd"))
+
 	misccode.MaximalRectangle([][]byte{{'1', '0', '1', '0', '0'}, {'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}})
 	fmt.Println(int('1' - '0'))
 	misccode.LongestValidParentheses("(()))())(")
@@ -249,7 +268,7 @@ func main() {
 	// [[1,2,3,4,5],[6,7,8,9,10],[11,12,13,14,15],[16,17,18,19,20],[21,22,23,24,25]] 19
 	fmt.Println(misccode.SearchMatrix([][]int{{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}, {11, 12, 13, 14, 15}, {16, 17, 18, 19, 20}, {21, 22, 23, 24, 25}}, 19))
 
-	ctx := context.Background()
+	ctx = context.Background()
 	ctx = context.WithValue(ctx, "TRACEID", 1234567890)
 
 	misccode.DEBUGT(nil, "TEST DEBUGT: %s", "test debugt")
