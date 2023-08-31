@@ -13,6 +13,8 @@ import (
 	"c1/utilcode"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -197,7 +199,135 @@ func ctxx(ctx context.Context) context.Context {
 	ctx = context.WithValue(ctx, "ddd", 222)
 	return ctx
 }
+func SAArrayToString(arr []string, split string) string {
+	if len(arr) == 0 {
+		return ""
+	}
+	arg := arr[0]
+	for i := 1; i < len(arr); i++ {
+		arg += split
+		arg += arr[i]
+	}
+
+	return arg
+}
+func SAStringToArray(str string, split string) []string {
+	if len(str) == 0 {
+		return []string{}
+	}
+
+	return strings.Split(str, split)
+}
+
+var (
+	SvipInterestsMap SvipInterestsInformationMap
+)
+
+type SvipInterestsInformationMap map[string]SvipInterestsInformation
+type SvipInterestsInformation struct {
+	Resources []SvipInterestsResource `json:"resources"`
+}
+type SvipInterestsResource struct {
+	ID   int    `json:"id"`
+	Test string `json:"test"`
+	Type int    `json:"type"`
+}
+
 func main() {
+
+	cmf := misccode.ConstructorMedianFinder2()
+	cmf.AddNum(-1)
+	cmf.AddNum(-2)
+	cmf.AddNum(-3)
+	fmt.Println(cmf.FindMedian())
+	cmf.AddNum(-4)
+	cmf.AddNum(-5)
+	//cngmf.AddNum(0)
+	//cmf.AddNum(6)
+	//cmf.AddNum(3)
+	//cmf.AddNum(1)
+	//cmf.AddNum(0)
+	//cmf.AddNum(0)
+
+	svipR := &SvipInterestsResource{
+		ID:   1,
+		Type: 10,
+		Test: "98989",
+	}
+	svipRB, _ := json.Marshal(svipR)
+	fmt.Println(string(svipRB))
+	svipRB = []byte("{\"id\":1,\"test\":\"98989\",\"type\":10, \"yuyu\":78}")
+	fmt.Println(string(svipRB))
+	svipS := &SvipInterestsResource{}
+	json.Unmarshal(svipRB, svipS)
+	fmt.Println(svipS)
+
+	// test1 := []int{10, -3, 0, 5, 9}
+	head108 := misccode.SortedArrayToBST([]int{1, 3})
+	fmt.Println(head108)
+
+	newNodes := make([]*misccode.ListNode, 5)
+	fmt.Println(newNodes[1].Val)
+
+	dHead := &misccode.ListNode{}
+	dh := dHead
+	for i := 0; i < 2; i++ {
+		dh.Next = &misccode.ListNode{Val: i + 1}
+		dh = dh.Next
+	}
+
+	misccode.ReverseKGroup(dHead.Next, 2)
+
+	fmt.Println(strings.Join([]string{"sfag"}, ","))
+	fmt.Println(strings.Split("sfag", ","))
+
+	ists := make(map[string]SvipInterestsInformation)
+	for i := 1; i <= 4; i++ {
+		ists[fmt.Sprint(i)] = SvipInterestsInformation{
+			Resources: []SvipInterestsResource{
+				{ID: 1, Type: 20},
+				{ID: 2, Type: 30},
+			},
+		}
+	}
+	istsB, err := json.Marshal(ists)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(istsB))
+
+	f1, err := os.Open("/Users/mico/svip_interests.json")
+	defer f1.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	b, err := ioutil.ReadAll(f1)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(b))
+	jsonData := `{"1":"{\"resources\": [{\"id\": 40,\"type\":2},{\"id\": 20,\"type\":1}]","2":"{\"resources\": [{\"id\": 40,\"type\":2},{\"id\": 20,\"type\":1}]","3":"{\"resources\": [{\"id\": 40,\"type\":2},{\"id\": 20,\"type\":1}]","4":"{\"resources\": [{\"id\": 40,\"type\":2},{\"id\": 20,\"type\":1}]"}`
+
+	interests := make(map[string]SvipInterestsInformation)
+	err2 := json.Unmarshal([]byte(jsonData), &interests)
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+
+	var strrr []string
+	fmt.Println(SAArrayToString(strrr, "|"))
+	fmt.Println(len(SAArrayToString(strrr, "|")))
+	fmt.Println(len(SAArrayToString([]string{}, "|")))
+	fmt.Println(len(""))
+
+	fmt.Println(SAArrayToString([]string{"", "", "", ""}, "|"))
+	fmt.Println(len(SAStringToArray("|||", "|")))
+
+	nums := []int{1, 2, 3, 4, 5, 6, 7}
+	misccode.Rotate(nums, 3)
+	fmt.Println(nums)
+
 	fmt.Printf("%T\n", make([]int, 0))
 	fmt.Printf("%T\n", make(map[int]int))
 	fmt.Printf("%T\n", make(chan int))
@@ -206,6 +336,7 @@ func main() {
 
 	fmt.Println(len(strings.Split("ga", ",")))
 	fmt.Println(len(strings.Split("falkjg", ",")))
+	fmt.Println(len(strings.Split("fal,kjg", ",")))
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, "ddd", 111)
 	//ctx = context.WithValue(ctx, "ddd", 222)
@@ -457,7 +588,7 @@ func main() {
 
 	misccode.ReversePairs([]int{1, 3, 2, 3, 1})
 
-	nums := []int{1, 4, 2, 6, 3, 0, 9}
+	nums = []int{1, 4, 2, 6, 3, 0, 9}
 	misccode.QuickSort2(nums)
 	fmt.Println(nums)
 
