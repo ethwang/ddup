@@ -235,6 +235,7 @@ type SvipInterestsResource struct {
 
 func main() {
 
+	misccode.PartitionLabels("ababcbacadefegdehijhklij")
 	cmf := misccode.ConstructorMedianFinder2()
 	cmf.AddNum(-1)
 	cmf.AddNum(-2)
