@@ -15,10 +15,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
+	"unsafe"
 
 	"context"
 )
@@ -233,7 +235,65 @@ type SvipInterestsResource struct {
 	Type int    `json:"type"`
 }
 
+func changeSlice(s1 []int) {
+	arrayAddr := (*int)(unsafe.Pointer(&s1[0]))
+	fmt.Printf("切片底层数组的地址2: %p, len: %v\n", arrayAddr, len(s1))
+	s1 = append(s1, 10)
+	arrayAddr = (*int)(unsafe.Pointer(&s1[0]))
+	fmt.Printf("切片底层数组的地址3: %p, len: %v\n", arrayAddr, len(s1))
+}
+
 func main() {
+
+	{
+		testMap := map[int]*SvipInterestsResource{1: {ID: 1, Test: "1"}, 2: {ID: 2}, 3: {ID: 3}}
+
+		newTestMap := make(map[int]*SvipInterestsResource)
+		for k, v := range testMap {
+			newTestMap[k] = v
+		}
+		fmt.Println(newTestMap)
+	}
+	{
+		stest := make([]int, 10, 12)
+		stest1 := stest[8:]
+		arrayAddr := (*int)(unsafe.Pointer(&stest1[0]))
+		fmt.Printf("切片底层数组的地址: %p, len: %v\n", arrayAddr, len(stest1))
+		changeSlice(stest1)
+		stest1 = stest1[:3]
+		fmt.Printf("s: %v, len of s: %d, cap of s: %d\n", stest, len(stest), cap(stest))
+		fmt.Printf("s1: %v, len of s1: %d, cap of s1: %d, stest1[2]: %v\n", stest1, len(stest1), cap(stest1), stest1[2])
+		arrayAddr = (*int)(unsafe.Pointer(&stest1[0]))
+		fmt.Printf("切片底层数组的地址: %p, len: %v\n", arrayAddr, len(stest1))
+	}
+
+	mm := map[int]int{1: 1}
+	misccode.MapCopy(mm)
+	fmt.Println(mm)
+
+	numsRoate := []int{1, 2, 3, 4, 5, 6, 7}
+	misccode.Rotate3(numsRoate, 3)
+	fmt.Println(numsRoate)
+
+	numsInsertArray := []int{1, 2, 3, 4, 5}
+	fmt.Println(reflect.TypeOf(numsInsertArray).Kind())
+	fmt.Println(misccode.InsertArray(numsInsertArray, 6, 100))
+
+	fmt.Println(misccode.MaxSlidingWindow([]int{1, 3, -1, -3, 5, 3, 6, 7}, 3))
+
+	fmt.Println(misccode.MinWindow("ADOBECODEBANC", "ABC"))
+	var ans []interface{}
+	// ans = []SvipInterestsResource{}
+	//if vres, ok := ans.(int); ok {
+	//	fmt.Println(vres)
+	//}
+	fmt.Println(reflect.TypeOf(ans))
+
+	misccode.Trap42([]int{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1})
+	misccode.FindMedianSortedArrays([]int{0, 1}, []int{2})
+
+	mn := int64(1)
+	fmt.Println(mn == 1)
 
 	misccode.PartitionLabels("ababcbacadefegdehijhklij")
 	cmf := misccode.ConstructorMedianFinder2()
