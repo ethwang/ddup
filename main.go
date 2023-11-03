@@ -283,10 +283,6 @@ func main() {
 
 	fmt.Println(misccode.MinWindow("ADOBECODEBANC", "ABC"))
 	var ans []interface{}
-	// ans = []SvipInterestsResource{}
-	//if vres, ok := ans.(int); ok {
-	//	fmt.Println(vres)
-	//}
 	fmt.Println(reflect.TypeOf(ans))
 
 	misccode.Trap42([]int{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1})
@@ -303,13 +299,6 @@ func main() {
 	fmt.Println(cmf.FindMedian())
 	cmf.AddNum(-4)
 	cmf.AddNum(-5)
-	//cngmf.AddNum(0)
-	//cmf.AddNum(6)
-	//cmf.AddNum(3)
-	//cmf.AddNum(1)
-	//cmf.AddNum(0)
-	//cmf.AddNum(0)
-
 	svipR := &SvipInterestsResource{
 		ID:   1,
 		Type: 10,

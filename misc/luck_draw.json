@@ -487,7 +487,7 @@
     ],
     "normal_top_reward_prize_config_list": [
         {
-            "code": 113,
+            "code": 481,
             "code_type": 3,
             "term": 3,
             "coins": 500,
@@ -498,7 +498,7 @@
             "top_reward_prize_type": 1
         },
         {
-            "code": 113,
+            "code": 481,
             "code_type": 3,
             "term": 3,
             "coins": 500,
@@ -509,7 +509,7 @@
             "top_reward_prize_type": 2
         },
         {
-            "code": 113,
+            "code": 481,
             "code_type": 3,
             "term": 3,
             "coins": 500,
@@ -555,7 +555,7 @@
     ],
     "advanced_top_reward_prize_config_list": [
         {
-            "code": 112,
+            "code": 480,
             "code_type": 3,
             "term": 3,
             "coins": 1000,
@@ -566,7 +566,7 @@
             "top_reward_prize_type": 1
         },
         {
-            "code": 112,
+            "code": 480,
             "code_type": 3,
             "term": 3,
             "coins": 1000,
@@ -577,7 +577,7 @@
             "top_reward_prize_type": 2
         },
         {
-            "code": 112,
+            "code": 480,
             "code_type": 3,
             "term": 3,
             "coins": 1000,
@@ -1096,7 +1096,7 @@
             "coins": 55,
             "is_lucky_value_must": 0,
             "grand_prize": 0,
-            "online_time": 1684821845,
+            "online_time": 1655861732,
             "is_show_new": 1
         },
         {
@@ -1399,5 +1399,10 @@
             "online_time": 1677565857,
             "is_show_new": 1
         }
-    ]
+    ],
+    "one_time_consume_coins_lucky": 10,
+    "ten_times_consume_coins_lucky": 100,
+    "lucky_luck_value": 500,
+    "lucky_send_top_prize_message_coins": 66,
+    "lucky_send_top_prize_region_message_coins": 888
 }
