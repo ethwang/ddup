@@ -1183,5 +1183,221 @@
         }
     ],
     "activity_start_time": "2023-04-28 00:00:00",
-    "activity_end_time": "2024-05-04 00:00:00"
+    "activity_end_time": "2024-05-04 00:00:00",
+    "lucky_prize_config_list": [
+        {
+            "code": 20000747,
+            "code_type": 1,
+            "term": 14,
+            "coins": 1,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1677565857,
+            "is_show_new": 1
+        },
+        {
+            "code": 20000748,
+            "code_type": 1,
+            "term": 14,
+            "coins": 3,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1677565857,
+            "is_show_new": 1
+        },
+        {
+            "code": 20000749,
+            "code_type": 1,
+            "term": 14,
+            "coins": 5,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1677565857,
+            "is_show_new": 1
+        },
+        {
+            "code": 20000750,
+            "code_type": 1,
+            "term": 14,
+            "coins": 12,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1677565857,
+            "is_show_new": 1
+        },
+        {
+            "code": 90,
+            "code_type": 6,
+            "term": 14,
+            "coins": 66,
+            "is_lucky_value_must": 1,
+            "grand_prize": 0,
+            "online_time": 1677565857,
+            "is_show_new": 1
+        },
+        {
+            "code": 20000752,
+            "code_type": 1,
+            "term": 14,
+            "coins": 99,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1677565857,
+            "is_show_new": 1
+        },
+        {
+            "code": 20000753,
+            "code_type": 1,
+            "term": 14,
+            "coins": 350,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1677565857,
+            "is_show_new": 1
+        },
+        {
+            "code": 20000754,
+            "code_type": 1,
+            "term": 14,
+            "coins": 888,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1677565857,
+            "is_show_new": 1
+        }
+    ],
+    "lucky_top_reward_prize_config_list": [
+        {
+            "code": 482,
+            "code_type": 3,
+            "term": 3,
+            "coins": 500,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1655861732,
+            "is_show_new": 1,
+            "top_reward_prize_type": 1
+        },
+        {
+            "code": 482,
+            "code_type": 3,
+            "term": 3,
+            "coins": 500,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1655861732,
+            "is_show_new": 1,
+            "top_reward_prize_type": 2
+        },
+        {
+            "code": 482,
+            "code_type": 3,
+            "term": 3,
+            "coins": 500,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1655861732,
+            "is_show_new": 1,
+            "top_reward_prize_type": 3
+        },
+        {
+            "code": 20000752,
+            "code_type": 1,
+            "term": 14,
+            "coins": 99,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1655861732,
+            "is_show_new": 1,
+            "top_reward_prize_type": 3
+        },
+        {
+            "code": 20000753,
+            "code_type": 1,
+            "term": 14,
+            "coins": 350,
+            "is_lucky_value_must": 0,
+            "grand_prize": 1,
+            "online_time": 1655861732,
+            "is_show_new": 1,
+            "top_reward_prize_type": 2
+        },
+        {
+            "code": 20000754,
+            "code_type": 1,
+            "term": 14,
+            "coins": 888,
+            "is_lucky_value_must": 0,
+            "grand_prize": 1,
+            "online_time": 1655861732,
+            "is_show_new": 1,
+            "top_reward_prize_type": 1
+        }
+    ],
+    "lucky_probability_list": [
+        {
+            "code": 20000747,
+            "probability": 3367
+        },
+        {
+            "code": 20000748,
+            "probability": 2800 
+        },
+        {
+            "code": 20000749,
+            "probability": 1571
+        },
+        {
+            "code": 20000750,
+            "probability": 1138 
+        },
+        {
+            "code": 90,
+            "probability": 817 
+        },
+        {
+            "code": 20000752,
+            "probability": 200 
+        },
+        {
+            "code": 20000753,
+            "probability": 90 
+        },
+        {
+            "code": 20000754,
+            "probability": 17 
+        }
+    ],
+    "lucky_melting_gift_config_list": [
+        {
+            "code": 20000747,
+            "code_type": 1,
+            "term": 14,
+            "coins": 1,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1677565857,
+            "is_show_new": 1
+        },
+        {
+            "code": 20000748,
+            "code_type": 1,
+            "term": 14,
+            "coins": 3,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1677565857,
+            "is_show_new": 1
+        },
+        {
+            "code": 20000749,
+            "code_type": 1,
+            "term": 14,
+            "coins": 5,
+            "is_lucky_value_must": 0,
+            "grand_prize": 0,
+            "online_time": 1677565857,
+            "is_show_new": 1
+        }
+    ]
 }
