@@ -1,0 +1,72 @@
+{
+    "20000491": {
+      "blind_box_probability": [{
+        "id": 1,
+        "gift_id": 20000492,
+        "probability": 3232
+      }, {
+        "id": 2,
+        "gift_id": 20000493,
+        "probability": 3000
+      }, {
+        "id": 3,
+        "gift_id": 20000494,
+        "probability": 2200
+      }, {
+        "id": 4,
+        "gift_id": 20000495,
+        "probability": 1072
+      }, {
+        "id": 5,
+        "gift_id": 20000496,
+        "probability": 480
+      }, {
+        "id": 6,
+        "gift_id": 20000497,
+        "probability": 15
+      }, {
+        "id": 7,
+        "gift_id": 20000498,
+        "probability": 1
+      }],
+      "blind_box_draw_2000_gift_id": 20000497,
+      "blind_box_draw_5000_gift_id": 20000498,
+      "blind_box_send_room_message_coins": 160,
+      "blind_box_special_num": 50
+    },
+    "20000693": {
+      "blind_box_probability": [{
+        "id": 1,
+        "gift_id": 20000694,
+        "probability": 2744
+      }, {
+        "id": 2,
+        "gift_id": 20000695,
+        "probability": 3400
+      }, {
+        "id": 3,
+        "gift_id": 20000696,
+        "probability": 2766
+      }, {
+        "id": 4,
+        "gift_id": 20000697,
+        "probability": 752
+      }, {
+        "id": 5,
+        "gift_id": 20000698,
+        "probability": 320
+      }, {
+        "id": 6,
+        "gift_id": 20000699,
+        "probability": 17
+      }, {
+        "id": 7,
+        "gift_id": 20000700,
+        "probability": 1
+      }],
+      "blind_box_draw_2000_gift_id": 20000699,
+      "blind_box_draw_5000_gift_id": 20000700,
+      "blind_box_send_room_message_coins": 500,
+      "blind_box_special_num": 50
+    }
+  }
