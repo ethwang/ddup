@@ -31,9 +31,9 @@
             "is_show_new": 1
         },
         {
-            "code": 411,
+            "code": 645,
             "code_type": 2,
-            "term": 3,
+            "term": 1,
             "coins": 129,
             "is_lucky_value_must": 0,
             "grand_prize": 0,
@@ -61,9 +61,9 @@
             "is_show_new": 1
         },
         {
-            "code": 412,
+            "code": 90,
             "code_type": 2,
-            "term": 3,
+            "term": 1,
             "coins": 1299,
             "is_lucky_value_must": 0,
             "grand_prize": 1,
@@ -207,9 +207,9 @@
             "is_show_new": 1
         },
         {
-            "code": 413,
+            "code": 646,
             "code_type": 2,
-            "term": 3,
+            "term": 1,
             "coins": 699,
             "is_lucky_value_must": 0,
             "grand_prize": 0,
@@ -531,9 +531,9 @@
             "top_reward_prize_type": 3
         },
         {
-            "code": 412,
+            "code": 90,
             "code_type": 2,
-            "term": 3,
+            "term": 1,
             "coins": 1299,
             "is_lucky_value_must": 1,
             "grand_prize": 1,
@@ -652,7 +652,7 @@
             "probability": 1371
         },
         {
-            "code": 411,
+            "code": 645,
             "probability": 980
         },
         {
@@ -664,7 +664,7 @@
             "probability": 30
         },
         {
-            "code": 412,
+            "code": 90,
             "probability": 25
         },
         {
@@ -724,7 +724,7 @@
             "probability": 769
         },
         {
-            "code": 413,
+            "code": 646,
             "probability": 556
         },
         {
@@ -824,7 +824,7 @@
             "probability": 569
         },
         {
-            "code": 413,
+            "code": 646,
             "probability": 556
         },
         {
