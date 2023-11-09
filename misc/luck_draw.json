@@ -56,13 +56,13 @@
             "term": 14,
             "coins": 999,
             "is_lucky_value_must": 1,
-            "grand_prize": 0,
+            "grand_prize": 1,
             "online_time": 1655861732,
             "is_show_new": 1
         },
         {
             "code": 90,
-            "code_type": 2,
+            "code_type": 6,
             "term": 1,
             "coins": 1299,
             "is_lucky_value_must": 0,
@@ -140,7 +140,7 @@
         "term": 14,
         "coins": 999,
         "is_lucky_value_must": 1,
-        "grand_prize": 0,
+        "grand_prize": 1,
         "online_time": 1655861732,
         "is_show_new": 1
       },
@@ -525,14 +525,14 @@
             "term": 14,
             "coins": 999,
             "is_lucky_value_must": 0,
-            "grand_prize": 0,
+            "grand_prize": 1,
             "online_time": 1655861732,
             "is_show_new": 1,
             "top_reward_prize_type": 3
         },
         {
             "code": 90,
-            "code_type": 2,
+            "code_type": 6,
             "term": 1,
             "coins": 1299,
             "is_lucky_value_must": 1,
@@ -634,7 +634,7 @@
     "lucky_draw_tag_key": "lucky_draw",
     "chat_message_key": "lucky_draw_chat_message_key",
     "send_top_prize_message_key": "send_top_prize_message",
-    "chat_message_dump_link":"https://web-app.voicemaker.media/lucky-adventure.html?fullPage=true&fromSource=1&webviewType=2&ratio=500&transparent=1",
+    "chat_message_dump_link":"https://web-app-test.voicemaker.media/lucky-adventure.html?fullPage=true&fromSource=1&webviewType=2&ratio=500&transparent=1&bounces=0",
     "wheat_circle_key": "lucky_draw_wheat_circle",
     "chat_bubble_key": "lucky_draw_chat_bubble",
     "go_key": "lucky_draw_go_key",
@@ -1189,7 +1189,7 @@
             "code": 20000747,
             "code_type": 1,
             "term": 14,
-            "coins": 1,
+            "coins": 2,
             "is_lucky_value_must": 0,
             "grand_prize": 0,
             "online_time": 1677565857,
@@ -1226,11 +1226,11 @@
             "is_show_new": 1
         },
         {
-            "code": 90,
+            "code": 89,
             "code_type": 6,
-            "term": 14,
+            "term": 1,
             "coins": 66,
-            "is_lucky_value_must": 1,
+            "is_lucky_value_must": 0,
             "grand_prize": 0,
             "online_time": 1677565857,
             "is_show_new": 1
@@ -1240,7 +1240,7 @@
             "code_type": 1,
             "term": 14,
             "coins": 99,
-            "is_lucky_value_must": 0,
+            "is_lucky_value_must": 1,
             "grand_prize": 0,
             "online_time": 1677565857,
             "is_show_new": 1
@@ -1249,7 +1249,7 @@
             "code": 20000753,
             "code_type": 1,
             "term": 14,
-            "coins": 350,
+            "coins": 300,
             "is_lucky_value_must": 0,
             "grand_prize": 0,
             "online_time": 1677565857,
@@ -1315,7 +1315,7 @@
             "code": 20000753,
             "code_type": 1,
             "term": 14,
-            "coins": 350,
+            "coins": 300,
             "is_lucky_value_must": 0,
             "grand_prize": 1,
             "online_time": 1655861732,
@@ -1352,7 +1352,7 @@
             "probability": 1138 
         },
         {
-            "code": 90,
+            "code": 89,
             "probability": 817 
         },
         {
@@ -1373,7 +1373,7 @@
             "code": 20000747,
             "code_type": 1,
             "term": 14,
-            "coins": 1,
+            "coins": 2,
             "is_lucky_value_must": 0,
             "grand_prize": 0,
             "online_time": 1677565857,
