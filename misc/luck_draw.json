@@ -37,7 +37,7 @@
             "coins": 129,
             "is_lucky_value_must": 0,
             "grand_prize": 0,
-            "online_time": 1677565857,
+            "online_time": 1699515677,
             "is_show_new": 1
         },
         {
@@ -67,7 +67,7 @@
             "coins": 1299,
             "is_lucky_value_must": 0,
             "grand_prize": 1,
-            "online_time": 1677565857,
+            "online_time": 1699515677,
             "is_show_new": 1
         },
         {
@@ -213,7 +213,7 @@
             "coins": 699,
             "is_lucky_value_must": 0,
             "grand_prize": 0,
-            "online_time": 1677565857,
+            "online_time": 1699515677,
             "is_show_new": 1
         },
         {
@@ -634,7 +634,7 @@
     "lucky_draw_tag_key": "lucky_draw",
     "chat_message_key": "lucky_draw_chat_message_key",
     "send_top_prize_message_key": "send_top_prize_message",
-    "chat_message_dump_link":"https://web-app-test.voicemaker.media/lucky-adventure.html?fullPage=true&fromSource=1&webviewType=2&ratio=500&transparent=1&bounces=0",
+    "chat_message_dump_link":"https://web-app.voicemaker.media/lucky-adventure.html?fullPage=true&fromSource=1&webviewType=2&ratio=500&transparent=1&bounces=0",
     "wheat_circle_key": "lucky_draw_wheat_circle",
     "chat_bubble_key": "lucky_draw_chat_bubble",
     "go_key": "lucky_draw_go_key",

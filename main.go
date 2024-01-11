@@ -13,12 +13,17 @@ import (
 	"c1/utilcode"
 	"encoding/json"
 	"fmt"
+	"hash/crc32"
 	"io/ioutil"
+	"math/rand"
 	"os"
+	"os/signal"
 	"reflect"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
+	"syscall"
 	"time"
 	"unsafe"
 
@@ -242,9 +247,109 @@ func changeSlice(s1 []int) {
 	arrayAddr = (*int)(unsafe.Pointer(&s1[0]))
 	fmt.Printf("切片底层数组的地址3: %p, len: %v\n", arrayAddr, len(s1))
 }
+func hash(id string, num int) int {
+	h := getCrc32(id)
+	h = Abs(h)
+	hashValue := (int)(h / int64(num) % int64(num))
+	return hashValue
+}
+
+func Abs(n int64) int64 {
+	y := n >> 63
+	return (n ^ y) - y
+}
+
+func getCrc32(id string) int64 {
+	return int64(crc32.ChecksumIEEE([]byte(id)))
+}
 
 func main() {
+	{
+		ans := make([]int64, 0, 10)
+		fmt.Println(len(ans), cap(ans))
+		ans = append(ans, 1)
+		fmt.Println(len(ans), cap(ans))
+	}
+	{
+		id := int64(25928351)
+		hashValue := hash(strconv.FormatInt(id, 10), 64)
+		fmt.Println(hashValue)
+		dbhash := hashValue / 16
+		tbhash := hashValue % 16
+		fmt.Println("dt", dbhash, tbhash)
 
+	}
+	{
+		fmt.Println(0x08 | 0x04)
+	}
+	{
+		//svipMedals := map[int32]uint32{
+		//	1: 380,
+		//	2: 381,
+		//	3: 382,
+		//	4: 383,
+		//	5: 504,
+		//}
+		//var vipMedals = map[int32]uint32{
+		//	1:  29,
+		//	5:  30,
+		//	8:  31,
+		//	9:  244,
+		//	10: 245,
+		//	11: 188,
+		//	12: 246,
+		//	13: 194,
+		//	14: 258,
+		//	15: 196,
+		//}
+		var charmMedals = map[int32]uint32{
+			1:  552,
+			5:  553,
+			8:  554,
+			10: 555,
+			12: 556,
+		}
+		// 转换为JSON格式
+		jsonData, err := json.Marshal(charmMedals)
+		if err != nil {
+			fmt.Println("转换为JSON时发生错误:", err)
+			return
+		}
+
+		// 打印JSON数据
+		fmt.Println(string(jsonData))
+		m := map[int32]uint32{}
+		json.Unmarshal(jsonData, &m)
+		fmt.Println(m)
+	}
+
+	{
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGALRM, syscall.SIGTERM, syscall.SIGUSR1)
+		<-c
+	}
+	{
+		numbers := []int{1, 2, 3, 4, 5}
+
+		// 使用 strings.Join 将数组转换为逗号相隔的字符串
+		result := strings.Join(strings.Fields(fmt.Sprint(numbers)), ",")
+
+		fmt.Println(strings.Fields(fmt.Sprint(numbers)))
+		// 打印结果
+		fmt.Println(result)
+	}
+	{
+		strconv.ParseBool("true")
+	}
+	{
+		misccode.SpiralOrder([][]int{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}})
+	}
+	{
+		misccode.SetZeroes([][]int{{0, 1, 2, 0}, {3, 4, 5, 2}, {1, 3, 1, 5}})
+	}
+	{
+		rand.Int63n(0)
+	}
 	{
 		testMap := map[int]*SvipInterestsResource{1: {ID: 1, Test: "1"}, 2: {ID: 2}, 3: {ID: 3}}
 

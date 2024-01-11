@@ -68,5 +68,36 @@
       "blind_box_draw_5000_gift_id": 20000700,
       "blind_box_send_room_message_coins": 500,
       "blind_box_special_num": 50
-    }
+    },
+    "20000733": {
+        "blind_box_probability": [{
+          "id": 1,
+          "gift_id": 20000734,
+          "probability": 1900 
+        }, {
+          "id": 2,
+          "gift_id": 20000735,
+          "probability": 2000 
+        }, {
+          "id": 3,
+          "gift_id": 20000736,
+          "probability": 1900 
+        }, {
+          "id": 4,
+          "gift_id": 20000737,
+          "probability": 2000 
+        }, {
+          "id": 5,
+          "gift_id": 20000738,
+          "probability": 200 
+        }, {
+          "id": 6,
+          "gift_id": 20000739,
+          "probability": 2000 
+        }],
+        "blind_box_draw_2000_gift_id": 20000739,
+        "blind_box_draw_5000_gift_id": 20000739,
+        "blind_box_send_room_message_coins": 10000,
+        "blind_box_special_num": 50
+      }
   }
