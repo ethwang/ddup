@@ -247,10 +247,6 @@ func changeSlice(s1 []int) {
 	arrayAddr = (*int)(unsafe.Pointer(&s1[0]))
 	fmt.Printf("切片底层数组的地址3: %p, len: %v\n", arrayAddr, len(s1))
 }
-<<<<<<< Updated upstream
-
-func main() {
-=======
 func hash(id string, num int) int {
 	h := getCrc32(id)
 	h = Abs(h)
@@ -392,7 +388,6 @@ func main() {
 	{
 		now := time.Now().UnixMilli()
 		fmt.Println("ttime, now: ", now, "end: ", 1706262000000)
->>>>>>> Stashed changes
 
 	{
 		testMap := map[int]*SvipInterestsResource{1: {ID: 1, Test: "1"}, 2: {ID: 2}, 3: {ID: 3}}
