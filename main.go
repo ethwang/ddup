@@ -19,6 +19,11 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+<<<<<<< Updated upstream
+=======
+	"sync"
+	"syscall"
+>>>>>>> Stashed changes
 	"time"
 	"unsafe"
 
@@ -242,8 +247,152 @@ func changeSlice(s1 []int) {
 	arrayAddr = (*int)(unsafe.Pointer(&s1[0]))
 	fmt.Printf("切片底层数组的地址3: %p, len: %v\n", arrayAddr, len(s1))
 }
+<<<<<<< Updated upstream
 
 func main() {
+=======
+func hash(id string, num int) int {
+	h := getCrc32(id)
+	h = Abs(h)
+	hashValue := (int)(h / int64(num) % int64(num))
+	return hashValue
+}
+
+func Abs(n int64) int64 {
+	y := n >> 63
+	return (n ^ y) - y
+}
+
+func getCrc32(id string) int64 {
+	return int64(crc32.ChecksumIEEE([]byte(id)))
+}
+func DateStringYMDHMSFromTimestampMilli(now int64, tz_seconds int) string {
+	localtime := now/1000 + int64(tz_seconds)
+	return time.Unix(localtime, 0).In(time.UTC).Format("2006-01-02 15:04:05")
+}
+func MGet(t ...string) {
+
+}
+
+func sender(ch chan int) {
+	for i := 0; i < 5; i++ {
+		ch <- i
+		time.Sleep(time.Second)
+	}
+	close(ch) // 关闭通道
+}
+
+type MyObject struct {
+	Number int
+}
+
+func main() {
+	{
+		// 创建一个对象池
+		pool := &sync.Pool{
+			New: func() interface{} {
+				fmt.Println("Creating new object")
+				return &MyObject{}
+			},
+		}
+
+		// 将对象放入池中
+		//obj := &MyObject{Number: 1}
+		//fmt.Printf("1 Retrieved object: %v, addr: %v, addr2: %v\n", obj.Number, &obj, obj)
+		//pool.Put(obj)
+
+		// 从池中获取对象
+		retrievedObj := pool.Get().(*MyObject)
+		fmt.Printf("2 Retrieved object: %v, addr: %v\n", retrievedObj.Number, &retrievedObj)
+
+		// retrievedObj.Number = 10
+		// 对象使用完后放回池中
+		pool.Put(retrievedObj)
+
+		// 再次获取对象时，会直接从池中获取
+		retrievedObj2 := pool.Get().(*MyObject)
+		fmt.Printf("3 Retrieved object again: %v, addr: %v\n", retrievedObj2.Number, &retrievedObj2)
+	}
+	{
+		ch := make(chan int)
+		go sender(ch)
+
+		for value := range ch {
+			fmt.Println("Received:", value)
+		}
+
+		fmt.Println("Done receiving!")
+		// i := 0
+		// atomic.CompareAndSwapUint32((*uint32)(i), 0, 1)
+	}
+	{
+		const layout = "2006-01-02 15:04:05"
+		dateTimeStr := "2024-05-01 00:00:00"
+
+		// 解析日期时间字符串
+		dateTime, err := time.Parse(layout, dateTimeStr)
+		if err != nil {
+			panic(err)
+		}
+
+		// 获取UTC时间戳（自1970年1月1日00:00:00 UTC以来的秒数）
+		timestamp := dateTime.Unix()
+
+		// 打印UTC时间戳
+		fmt.Printf("UTC Timestamp: %d\n", timestamp)
+
+		// 如果你需要纳秒级的时间戳
+		nanoTimestamp := dateTime.UnixNano()
+		fmt.Printf("UTC Nano Timestamp: %d\n", nanoTimestamp)
+
+		fmt.Printf("format string: %d\n", time.Date(2024, 5, 1, 0, 0, 0, 0, time.UTC).Unix())
+
+		fmt.Printf("format string2: %s\n", time.Unix(time.Date(2024, 5, 1, 0, 0, 0, 0, time.UTC).Unix(), 0).UTC().Format(layout))
+
+		fmt.Printf("format string3: %s\n", time.Unix(1713810780, 0).UTC().Format(layout))
+		fmt.Printf("format string4: %s", time.Now().Format(layout))
+
+	}
+	{
+		slice := []int{0, 1, 2}
+		fmt.Printf("orislice: %v, len: %v, cap: %v\n", slice, len(slice), cap(slice))
+		slice = slice[1:]
+		fmt.Printf("slice: %v, len: %v, cap: %v\n", slice, len(slice), cap(slice))
+
+		slice2 := []int{0, 1, 2}
+		fmt.Printf("orislice2: %v, len: %v, cap: %v\n", slice2, len(slice2), cap(slice2))
+		fmt.Printf("slice2[:0]: %v, len: %v, cap: %v\n", slice2[:0], len(slice2[:0]), cap(slice2[:0]))
+		slice2 = append(slice2[:0], slice2[1:]...)
+		fmt.Printf("slice2: %v, len: %v, cap: %v\n", slice2, len(slice2), cap(slice2))
+	}
+	{
+		s := []string{"1", "2"}
+		MGet(s...)
+
+	}
+	{
+		s := []string{"1", "2"}
+		fmt.Println(s[len(s):])
+	}
+	{
+		fmt.Printf("ceshi: %v", 123456-102345)
+	}
+	{
+		visited := map[*misccode.TreeNode]bool{}
+		var x *misccode.TreeNode
+		visited[x] = true
+		fmt.Printf("%+v", visited)
+		if v, ok := visited[x]; ok && v {
+			fmt.Println("9999")
+		}
+	}
+	{
+		fmt.Println(DateStringYMDHMSFromTimestampMilli(1*86400*1000+0*3600*1000, 0))
+	}
+	{
+		now := time.Now().UnixMilli()
+		fmt.Println("ttime, now: ", now, "end: ", 1706262000000)
+>>>>>>> Stashed changes
 
 	{
 		testMap := map[int]*SvipInterestsResource{1: {ID: 1, Test: "1"}, 2: {ID: 2}, 3: {ID: 3}}
