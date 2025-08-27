@@ -1,0 +1,58 @@
+{
+    "is_open": {
+      "US": true
+    },
+    "is_open_audio": {
+      "US": true
+    },
+    "spend_coin": {
+      "default": 1500,
+      "US": 1600
+    },
+    "audio_spend_coin": {
+      "default": 300,
+      "US": 800
+    },
+    "earn_diamond": {
+      "default": 1500,
+      "US": 1600
+    },
+    "audio_earn_diamond": {
+      "default": 300,
+      "US": 800
+    },
+    "delay_hung_up_second": 90,
+    "heartbeat_second": 30,
+    "deduct_coin_second": 60,
+    "add_diamond_second": 15,
+    "extra_diamond": {
+      "default": 100,
+      "US": 250
+    },
+    "open_invite": {
+        "US": true
+    },
+    "invite_limit": {
+      "invite_user_time_limit": 60,
+      "invite_user_count_limit": 20,
+      "invite_user_count_time_limit": 60
+    },
+    "open_limit": {
+      "android_vip_level_open_limit": 3,
+      "iOS_vip_level_open_limit": 3,
+      "android_charm_level_open_limit": 1,
+      "iOS_charm_level_open_limit": 3,
+      "spend_coin_open_limit": 1500,
+      "android_vc_open_limit": 1380091,
+      "iOS_vc_open_limit": 392070,
+      "audio_android_vip_level_open_limit": 3,
+      "audio_iOS_vip_level_open_limit": 3,
+      "audio_android_charm_level_open_limit": 1,
+      "audio_iOS_charm_level_open_limit": 3,
+      "audio_spend_coin_open_limit": 1500,
+      "audio_android_vc_open_limit": 1380163,
+      "audio_iOS_vc_open_limit": 392140 
+    },
+    "not_answer_second": 90,
+    "not_risk_control_duration": 1
+}

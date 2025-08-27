@@ -4,6 +4,7 @@ import (
 	"c1/enumcode"
 	"c1/greedycode"
 	"c1/linklistcode"
+	demo "c1/misc"
 	"c1/misccode"
 	"c1/queuecode"
 	"c1/setcode"
@@ -12,22 +13,30 @@ import (
 	"c1/trietreecode"
 	"c1/utilcode"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"hash/crc32"
 	"io/ioutil"
+	"math"
+	"net/http"
+	"net/url"
 	"os"
 	"reflect"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
-<<<<<<< Updated upstream
-=======
 	"sync"
-	"syscall"
->>>>>>> Stashed changes
 	"time"
 	"unsafe"
 
 	"context"
+
+	"github.com/panjf2000/ants/v2"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"golang.org/x/exp/rand"
+	"gopkg.in/yaml.v2"
 )
 
 // const regStr = "[:=, \r\n\t/]"
@@ -247,10 +256,6 @@ func changeSlice(s1 []int) {
 	arrayAddr = (*int)(unsafe.Pointer(&s1[0]))
 	fmt.Printf("切片底层数组的地址3: %p, len: %v\n", arrayAddr, len(s1))
 }
-<<<<<<< Updated upstream
-
-func main() {
-=======
 func hash(id string, num int) int {
 	h := getCrc32(id)
 	h = Abs(h)
@@ -285,8 +290,938 @@ func sender(ch chan int) {
 type MyObject struct {
 	Number int
 }
+type taskFunc func()
+
+func taskFuncWrapper(i int, wg *sync.WaitGroup) taskFunc {
+	return func() {
+		fmt.Printf("task:%d\n", i)
+		wg.Done()
+	}
+}
+func Hash(uin uint64) uint16 {
+
+	hash64 := uin
+	hi32 := uint32(hash64 >> 32)
+	lo32 := uint32(hash64 & 0xFFFFFFFF)
+
+	hash32 := hi32 ^ lo32
+	hash32 *= 2654435761
+
+	hi16 := uint16(hash32 >> 16)
+	lo16 := uint16(hash32 & 0xFFFF)
+
+	hash16 := hi16 ^ lo16
+	hash16 *= 40503 // gold ratio
+	return hash16
+}
+func Unit(uin uint64) uint16 {
+	return Hash(uin) % 8192
+}
+
+const (
+	kCurrencyRecordDBNum       = 4
+	kCurrencyRecordTableNum    = 64
+	kCurrencyRecordInstanceNum = 2
+)
+
+type GenVideoTradingData struct {
+	CoinsChangedAmount    int64 `json:"coins_changed_amount"`
+	SubCoinsChangedAmount int64 `json:"sub_coins_changed_amount"`
+	SubPeriodType         int32 `json:"sub_period_type"`
+}
+
+type GenVideoTradingRecord struct {
+	PayInfo    *GenVideoTradingData `json:"payment"`
+	RefundInfo *GenVideoTradingData `json:"refund_info"`
+}
+
+type Speaker interface {
+	S() string
+	P() int
+	E(int, string) float32
+}
+type A struct {
+}
+
+func (a A) S() string {
+	return "SA"
+}
+func (a A) P() int {
+	fmt.Println("AP")
+	return 0
+}
+func (a A) E(e1 int, e2 string) float32 {
+	fmt.Println("AE")
+	return 0.0
+}
+
+type B struct{}
+
+func (b B) S() string {
+
+	return "SB"
+}
+func (b B) P() int {
+	fmt.Println("BP")
+	return 1
+}
+func (b B) E(e1 int, e2 string) float32 {
+	fmt.Println("BE")
+	return 1.1
+}
+
+type C struct {
+	Speaker
+}
+
+func (c C) S() string {
+	fmt.Println("SC")
+	fmt.Println(c.Speaker.S())
+	return c.Speaker.S()
+}
+
+type Dog struct{}
+
+func (d Dog) Eat() {
+	fmt.Println("Dog eat!")
+}
+
+type SuperDog struct {
+	Dog
+}
+
+func (sd SuperDog) Eat() {
+	sd.Dog.Eat()
+	fmt.Println("SuperDog eat!")
+}
+
+func InArray(needle interface{}, haystack interface{}) (exists bool, index int) {
+	exists = false
+	index = -1
+
+	switch reflect.TypeOf(haystack).Kind() {
+	case reflect.Slice:
+		s := reflect.ValueOf(haystack)
+
+		for i := 0; i < s.Len(); i++ {
+			if reflect.DeepEqual(needle, s.Index(i).Interface()) == true {
+				index = i
+				exists = true
+				return
+			}
+		}
+	}
+
+	return
+}
+
+type CustomOption ants.Option
+
+func WithExpiryDuration(expiryDuration time.Duration) CustomOption {
+	return CustomOption(ants.WithExpiryDuration(expiryDuration))
+}
+func WithPreAlloc(preAlloc bool) CustomOption {
+	return CustomOption(ants.WithPreAlloc(preAlloc))
+}
+
+func TestPack(options ...CustomOption) {
+
+	opts := new(ants.Options)
+	for _, option := range options {
+		option(opts)
+	}
+	fmt.Printf("opts: %+v", opts)
+}
+
+var logHandle func(int, string)
+
+type PoolWorkingAdjustConfigT struct {
+	UpThreshold   int
+	UpCount       int
+	DownThreshold int
+	DownCount     int
+}
+
+type EventConfigOptionT struct {
+	PoolWorkingAdjustConfig *PoolWorkingAdjustConfigT
+}
+
+var (
+	// 定义一个 Histogram 用于收集上报值
+	valueGauge = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "example_value",
+			Help: "An example gauge that reports a random value every second.",
+		},
+		[]string{"source"},
+	)
+)
+
+func init() {
+	// 注册指标
+	prometheus.MustRegister(valueGauge)
+}
+
+// 模拟获取一个值的函数
+func getValue() float64 {
+	return rand.Float64() * 100 // 返回 0 到 100 之间的随机值
+}
+
+// 定义目标结构体
+type Person struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+type PersonMore struct {
+	Name    string `json:"name"`
+	Age     int    `json:"age"`
+	Class   int    `json:"class"`
+	Persons []*Person
+}
+
+type UserBasicUpdateModel struct {
+	Data []struct {
+		Uid           string `json:"uid"`
+		ShowId        string `json:"show_id"`
+		Nickname      string `json:"nickname"`
+		Gender        string `json:"gender"`
+		Avatar        string `json:"avatar"`
+		Birthday      string `json:"birthday"`
+		CreateTime    string `json:"create_time"`
+		Country       string `json:"country"`
+		Status        string `json:"status"`
+		Description   string `json:"description"`
+		Lang          string `json:"lang"`
+		Identity      string `json:"identity"`
+		Extend        string `json:"extend"`
+		UpdateTime    string `json:"update_time"`
+		VipLevel      string `json:"vip_level"`
+		CharmingLevel string `json:"charming_level"`
+		RiskControl   string `json:"risk_control"`
+	} `json:"data"`
+	Database  string      `json:"database"`
+	Es        int64       `json:"es"`
+	Gtid      interface{} `json:"gtid"`
+	Id        int         `json:"id"`
+	IsDdl     bool        `json:"isDdl"`
+	MysqlType struct {
+		Uid           string `json:"uid"`
+		ShowId        string `json:"show_id"`
+		Nickname      string `json:"nickname"`
+		Gender        string `json:"gender"`
+		Avatar        string `json:"avatar"`
+		Birthday      string `json:"birthday"`
+		CreateTime    string `json:"create_time"`
+		Country       string `json:"country"`
+		Status        string `json:"status"`
+		Description   string `json:"description"`
+		Lang          string `json:"lang"`
+		Identity      string `json:"identity"`
+		Extend        string `json:"extend"`
+		UpdateTime    string `json:"update_time"`
+		VipLevel      string `json:"vip_level"`
+		CharmingLevel string `json:"charming_level"`
+		RiskControl   string `json:"risk_control"`
+	} `json:"mysqlType"`
+	Old []struct {
+		Uid           string `json:"uid"`
+		ShowId        string `json:"show_id"`
+		Nickname      string `json:"nickname"`
+		Gender        string `json:"gender"`
+		Avatar        string `json:"avatar"`
+		Birthday      string `json:"birthday"`
+		CreateTime    string `json:"create_time"`
+		Country       string `json:"country"`
+		Status        string `json:"status"`
+		Description   string `json:"description"`
+		Lang          string `json:"lang"`
+		Identity      string `json:"identity"`
+		Extend        string `json:"extend"`
+		UpdateTime    string `json:"update_time"`
+		VipLevel      string `json:"vip_level"`
+		CharmingLevel string `json:"charming_level"`
+		RiskControl   string `json:"risk_control"`
+	} `json:"old"`
+	PkNames  []string `json:"pkNames"`
+	ServerId string   `json:"serverId"`
+	Sql      string   `json:"sql"`
+	SqlType  struct {
+		Uid           int `json:"uid"`
+		ShowId        int `json:"show_id"`
+		Nickname      int `json:"nickname"`
+		Gender        int `json:"gender"`
+		Avatar        int `json:"avatar"`
+		Birthday      int `json:"birthday"`
+		CreateTime    int `json:"create_time"`
+		Country       int `json:"country"`
+		Status        int `json:"status"`
+		Description   int `json:"description"`
+		Lang          int `json:"lang"`
+		Identity      int `json:"identity"`
+		Extend        int `json:"extend"`
+		UpdateTime    int `json:"update_time"`
+		VipLevel      int `json:"vip_level"`
+		CharmingLevel int `json:"charming_level"`
+		RiskControl   int `json:"risk_control"`
+	} `json:"sqlType"`
+	Table string `json:"table"`
+	Ts    int64  `json:"ts"`
+	Type  string `json:"type"`
+}
+
+func TestSlice(ss []string) {
+
+	ss[0] = "99"
+	// ss = append(ss, "2")
+	fmt.Printf("in: %p, val: %v, addr: %p, addr2: %p\n", ss, ss, &ss[0], &ss)
+}
+
+func getDigitCount(n int64) int {
+	if n == 0 {
+		return 1
+	}
+	if n < 0 {
+		n = -n // 处理负数
+	}
+	return int(math.Log10(float64(n))) + 1
+}
+
+func RoundWithPart(f float64, n int) (int64, int64, error) {
+	// 确认小数点之后要按多少位处理
+	fs := strconv.FormatFloat(f, 'f', -1, 64)
+	ss := strings.Split(fs, ".")
+	if len(ss) == 1 {
+		intPart, err := strconv.ParseInt(ss[0], 10, 64)
+		if err != nil {
+			return 0, 0, err
+		}
+		return intPart, 0, nil
+	}
+	if len(ss) != 2 {
+		return 0, 0, errors.New("小数不合法")
+	}
+
+	// 整数部分
+	intPart, err := strconv.ParseInt(ss[0], 10, 64)
+	if err != nil {
+		return 0, 0, err
+	}
+	// 小数部分
+	smallString := []byte{}
+	// 保留前3个小数
+	for i := 0; i < n; i++ {
+		if i < len(ss[1]) {
+			smallString = append(smallString, ss[1][i])
+		} else {
+			// 小数不足n位 则照常补齐
+			smallString = append(smallString, '0')
+		}
+	}
+	// 0倍 按0处理
+	if len(smallString) == 0 {
+		smallString = []byte("0")
+	}
+
+	smallPart, err := strconv.ParseInt(string(smallString), 10, 64)
+	if err != nil {
+		return 0, 0, err
+	}
+	return intPart, smallPart, nil
+}
+
+func RoundWithPartV2(f float64, n int) (int64, float64, error) {
+	if n < 0 {
+		return 0, 0, errors.New("n 不能为负")
+	}
+
+	scale := math.Pow(10, float64(n))
+	rounded := math.Round(f*scale) / scale
+
+	intPart := int64(rounded)
+	floatPart := math.Abs(rounded - float64(intPart)) // 始终返回正的小数部分
+
+	return intPart, floatPart, nil
+}
+
+/* 多模式字符串匹配算法 */
+type Node struct {
+	children map[rune]*Node
+	fail     *Node
+	output   []string
+}
+
+type AhoCorasick struct {
+	root *Node
+}
+
+func NewAhoCorasick() *AhoCorasick {
+	return &AhoCorasick{root: &Node{children: make(map[rune]*Node)}}
+}
+
+// 插入关键词
+func (ac *AhoCorasick) Insert(keyword string) {
+	node := ac.root
+	for _, ch := range keyword {
+		if node.children[ch] == nil {
+			node.children[ch] = &Node{children: make(map[rune]*Node)}
+		}
+		node = node.children[ch]
+	}
+	node.output = append(node.output, keyword)
+}
+
+// 构建失败指针
+func (ac *AhoCorasick) Build() {
+	queue := []*Node{}
+	for _, child := range ac.root.children {
+		child.fail = ac.root
+		queue = append(queue, child)
+	}
+
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+
+		for ch, child := range current.children {
+			fail := current.fail
+			for fail != nil && fail.children[ch] == nil {
+				fail = fail.fail
+			}
+			if fail != nil {
+				child.fail = fail.children[ch]
+			} else {
+				child.fail = ac.root
+			}
+			child.output = append(child.output, child.fail.output...)
+			queue = append(queue, child)
+		}
+	}
+}
+
+// 匹配文本
+func (ac *AhoCorasick) Search(text string) []string {
+	node := ac.root
+	results := []string{}
+
+	for _, ch := range text {
+		for node != ac.root && node.children[ch] == nil {
+			node = node.fail
+		}
+		if node.children[ch] != nil {
+			node = node.children[ch]
+		}
+		results = append(results, node.output...)
+	}
+	return results
+}
+
+func quickSort(arr []int, left, right int) {
+	if left >= right {
+		return
+	}
+	pivot := partition(arr, left, right)
+	quickSort(arr, left, pivot-1)
+	quickSort(arr, pivot+1, right)
+}
+
+func partition(arr []int, left, right int) int {
+	pivot := arr[right]
+	i := left
+	for j := left; j < right; j++ {
+		if arr[j] < pivot {
+			arr[i], arr[j] = arr[j], arr[i]
+			i++
+		}
+	}
+	arr[i], arr[right] = arr[right], arr[i]
+	return i
+}
+
+func minWindow(s string, t string) string {
+	md := map[byte]int{}
+	for i := 0; i < len(t); i++ {
+		md[t[i]]++
+	}
+	ms := map[byte]int{}
+	res := ""
+
+	minLen := math.MaxInt
+	for i, j := 0, 0; i <= j && j < len(s); {
+		if equal(ms, md) {
+			minLen = min(minLen, j-i+1)
+			if minLen == j-i+1 {
+				res = s[i:j]
+				fmt.Println(res)
+			}
+			ms[s[i]]--
+			i++
+		} else {
+			ms[s[j]]++
+			j++
+		}
+	}
+	return res
+}
+func equal(ms, md map[byte]int) bool {
+	for b, c := range md {
+		v, ok := ms[b]
+		if !(ok && v == c) {
+			return false
+		}
+	}
+	return true
+}
+
+func bindYamlData(data any, content []byte) error {
+
+	rt := reflect.TypeOf(data)
+	if rt.Kind() != reflect.Pointer {
+		return fmt.Errorf("data must be point")
+	}
+
+	re := reflect.New(rt.Elem())
+	err := yaml.Unmarshal(content, re.Interface())
+	if err != nil {
+		return err
+	}
+
+	reflect.ValueOf(data).Elem().Set(re.Elem())
+	return nil
+}
 
 func main() {
+	{
+
+		fmt.Println(minWindow("ADOBECODEBANC", "ABC"))
+	}
+	{
+		fmt.Println(fmt.Sprintf("%d", 1299976/86400))
+		// todo: 快速排序
+		arr := []int{1, 3, 2, 4, 5, 6, 7, 8, 9, 10}
+		quickSort(arr, 0, len(arr)-1)
+		fmt.Println(arr)
+	}
+	{
+		ac := NewAhoCorasick()
+		ac.Insert("he")
+		ac.Insert("she")
+		ac.Insert("his")
+		ac.Insert("hers")
+		ac.Build()
+
+		text := "ushers"
+		text = "h"
+		fmt.Println(ac.Search(text)) // 输出匹配的关键字
+	}
+	{
+		// intPart, smallPart, err := RoundWithPart(21.0065, 3)
+		intPart, smallPart, err := RoundWithPart(-21.65, 3)
+
+		if err != nil {
+			fmt.Println("err: ", err)
+		}
+		fmt.Printf("intPart: %v, smallPart: %v\n", intPart, smallPart)
+
+		intPartV2, smallPartV2, err := RoundWithPartV2(-21.65, 3)
+
+		if err != nil {
+			fmt.Println("err: ", err)
+		}
+		fmt.Printf("intPart: %v, smallPart: %f", intPartV2, smallPartV2)
+	}
+	{
+		var t []int32
+		fmt.Println(t == nil)
+		fmt.Println(len(t))
+		m := make(map[int]int, 0)
+		m[1] = 3
+		fmt.Println(m)
+	}
+	{
+		m := map[int]*PoolWorkingAdjustConfigT{}
+		for i := 0; i < 10; i++ {
+			m[i] = &PoolWorkingAdjustConfigT{UpCount: i}
+		}
+
+		if config, ok := m[1]; ok {
+			config.UpCount = 10000
+		}
+
+		for _, c := range m {
+			fmt.Println(c)
+		}
+
+	}
+	{
+		v := float64(10.011)
+		k1, k2 := math.Modf(v)
+		fmt.Println(k1, k2)
+	}
+	{
+		popularity := 10
+		extraStr := fmt.Sprintf("%07d", popularity)
+		extraNum, err := strconv.Atoi(extraStr)
+		if err != nil {
+			fmt.Println(err)
+		}
+		extraScore := float64(extraNum) / math.Pow(10, float64(len(extraStr)))
+		fmt.Println("score: ", extraScore)
+
+	}
+	{
+		extraScore := int64(100000)
+		fmt.Printf("%v\n", getDigitCount(extraScore))
+		fmt.Printf("%v\n", math.Pow(10, float64(getDigitCount(extraScore))))
+		fmt.Printf("%v\n", float64(extraScore)/math.Pow(10, float64(getDigitCount(extraScore))))
+
+	}
+	{
+		// 切片:https://mp.weixin.qq.com/s?__biz=MzUxMDI4MDc1NA==&mid=2247489302&idx=1&sn=c787d1fa4546e12c7e55e880da73c91f&scene=21#wechat_redirect
+		test1 := make([]string, 1, 10)
+		test1[0] = "1"
+		TestSlice(test1)
+		fmt.Printf("out: %p, val: %v, addr: %p, addr2: %p", test1, test1, &test1[0], &test1)
+	}
+	{
+		fmt.Printf("%d", 10*time.Second)
+	}
+	{
+		v := "{\"data\":[{\"uid\":\"100032\",\"show_id\":\"100032\",\"nickname\":\"姓名权倾\",\"gender\":\"0\",\"avatar\":\"image/3a36f1607a484d7bd300b11e67d7dd24\",\"birthday\":\"1178596800000\",\"create_time\":\"2024-04-09 00:00:00.0\",\"country\":\"HK\",\"status\":\"0\",\"description\":\"我的个人介绍\",\"lang\":\"en\",\"identity\":\"1\",\"extend\":\"{\\\"storage\\\":true,\\\"new_device\\\":true,\\\"notification\\\":true}\",\"update_time\":\"2024-12-02 12:44:49.0\",\"vip_level\":\"6\",\"charming_level\":\"0\",\"risk_control\":null}],\"database\":\"user\",\"es\":1733143489000,\"gtid\":null,\"id\":16058497,\"isDdl\":false,\"mysqlType\":{\"uid\":\"bigint\",\"show_id\":\"bigint\",\"nickname\":\"varchar\",\"gender\":\"tinyint\",\"avatar\":\"varchar\",\"birthday\":\"bigint\",\"create_time\":\"datetime\",\"country\":\"varchar\",\"status\":\"int\",\"description\":\"varchar\",\"lang\":\"varchar\",\"identity\":\"tinyint\",\"extend\":\"json\",\"update_time\":\"datetime\",\"vip_level\":\"int\",\"charming_level\":\"int\",\"risk_control\":\"json\"},\"old\":[{\"uid\":\"100032\",\"show_id\":\"100032\",\"nickname\":\"姓名权倾\",\"gender\":\"0\",\"avatar\":\"image/3a36f1607a484d7bd300b11e67d7dd24\",\"birthday\":\"1178596800000\",\"create_time\":\"2024-04-09 00:00:00.0\",\"country\":\"HK\",\"status\":\"0\",\"description\":\"我的个人介绍\",\"lang\":\"zh_CN\",\"identity\":\"1\",\"extend\":\"{\\\"storage\\\":true,\\\"new_device\\\":true,\\\"notification\\\":true}\",\"update_time\":\"2024-11-27 11:21:26.0\",\"vip_level\":\"6\",\"charming_level\":\"0\",\"risk_control\":null}],\"pkNames\":[\"uid\"],\"serverId\":\"101841996\",\"sql\":\"\",\"sqlType\":{\"uid\":8,\"show_id\":8,\"nickname\":253,\"gender\":1,\"avatar\":253,\"birthday\":8,\"create_time\":12,\"country\":254,\"status\":3,\"description\":253,\"lang\":253,\"identity\":1,\"extend\":245,\"update_time\":12,\"vip_level\":3,\"charming_level\":3,\"risk_control\":245},\"table\":\"user_basic\",\"ts\":1733143489342,\"type\":\"UPDATE\"}"
+
+		var userBasicEvent UserBasicUpdateModel
+		err := json.Unmarshal([]byte(v), &userBasicEvent)
+		if err != nil {
+			fmt.Println("err: ", err)
+		}
+		fmt.Printf("struct: %+v", userBasicEvent)
+	}
+	{
+		m := map[string]int{"0": 0, "1": 2, "3": 4}
+		fmt.Printf("m: %v", m[""])
+	}
+	{
+		var p PersonMore
+		p.Persons = append(p.Persons, &Person{Name: "77", Age: 99})
+		pp, err := json.Marshal(p)
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
+
+		var pt PersonMore
+		err = json.Unmarshal(pp, &pt)
+		if err != nil {
+			fmt.Printf("err: %v", err)
+		}
+		for _, v := range pt.Persons {
+			if v.Name == "77" && v.Age == 99 {
+				v.Name = "88"
+				v.Age = 100
+			}
+		}
+		pt.Persons = append(pt.Persons, &Person{Name: "999", Age: 999})
+
+		ppt, err := json.Marshal(pt)
+		if err != nil {
+			fmt.Printf("err: %v", err)
+		}
+
+		fmt.Println("ppt", string(ppt))
+	}
+	{
+		tP := []*PersonMore{
+			{
+				Name:  "1",
+				Age:   2,
+				Class: 3,
+			},
+			{
+				Name:  "2",
+				Age:   3,
+				Class: 4,
+			},
+		}
+		tt, err := json.Marshal(tP)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("tt: ", string(tt))
+
+		var tp1 []*PersonMore
+		err = json.Unmarshal(tt, &tp1)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("tp1: ", tp1[0].Name, tp1[1].Name)
+
+	}
+	{
+		for i := 0; i < 10; i++ {
+			fmt.Println(time.Now().UnixNano())
+		}
+	}
+	{
+		fmt.Println(fmt.Sprint(8))
+	}
+	{
+		commonInfo := map[string]interface{}{"1": 3}
+		for k, v := range commonInfo {
+			fmt.Println(k, v)
+		}
+	}
+	{
+		// 创建 map
+		data := map[string]interface{}{
+			"name":  "Alice",
+			"age":   30,
+			"class": 3,
+		}
+		delete(data, "name")
+		//data := PersonMore{
+		//	Name:  "jack",
+		//	Age:   99,
+		//	Class: 88,
+		//}
+		//var ok bool
+		//var k interface{}
+		//data.Age = k.(int)
+		//// data.Age, ok = k.(int)
+		//fmt.Println("ok", ok)
+
+		// 将 map 转换为 JSON 字符串
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			fmt.Println("Error marshalling JSON:", err)
+			return
+		}
+
+		// 将 JSON 解码到结构体
+		var person Person
+		if err := json.Unmarshal(jsonData, &person); err != nil {
+			fmt.Println("Error unmarshalling JSON:", err)
+			return
+		}
+
+		fmt.Println("结构体:", person)
+	}
+	{
+		rand.Seed(uint64(time.Now().UnixNano()))
+
+		// 设置 HTTP 路由
+		http.Handle("/metrics", promhttp.Handler())
+
+		// 启动 HTTP 服务器
+		go func() {
+			defer func() {
+				fmt.Println("8888888")
+			}()
+			if err := http.ListenAndServe(":8080", nil); err != nil {
+				panic(err)
+			}
+		}()
+
+		// 创建一个定时器，每秒获取一个值并上报
+		ticker := time.NewTicker(1 * time.Second)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			// value := getValue()
+			valueGauge.WithLabelValues("random_source").Set(1988) // 上报值
+		}
+	}
+	{
+		var testm map[string]string
+		if v, ok := testm["1"]; ok {
+			fmt.Println("v: ", v)
+		}
+	}
+	{
+		// 初始化配置
+		opts := &EventConfigOptionT{
+			PoolWorkingAdjustConfig: &PoolWorkingAdjustConfigT{
+				UpThreshold:   80,
+				UpCount:       10,
+				DownThreshold: 30,
+				DownCount:     5,
+			},
+		}
+		// 新的配置
+		poolWorkingAdjustConfig := PoolWorkingAdjustConfigT{
+			UpThreshold:   85,
+			UpCount:       15,
+			DownThreshold: 25,
+			DownCount:     7,
+		}
+		// 使用解引用赋值
+		*(opts.PoolWorkingAdjustConfig) = poolWorkingAdjustConfig
+		// 打印结果
+		fmt.Println("Updated PoolWorkingAdjustConfig:", opts.PoolWorkingAdjustConfig)
+		poolWorkingAdjustConfig.DownCount = 17
+		fmt.Println("Updated PoolWorkingAdjustConfig:", opts.PoolWorkingAdjustConfig)
+		fmt.Println("Updated PoolWorkingAdjustConfig3:", poolWorkingAdjustConfig)
+
+	}
+	{
+		logHandle(1, "ss")
+	}
+	{
+		pri := demo.NewPrivate()
+		pri.TestPricvate()
+	}
+	{
+		TestPack(WithExpiryDuration(1300*time.Second), WithPreAlloc(true))
+	}
+	{
+		inArray, _ := InArray("JP", []string{"", "JP"})
+		fmt.Printf("inArray: %v\n", inArray)
+	}
+	{
+		fmt.Println(strings.Contains("https://image-test.appparty.net/web-ai-image/20240828b36466fc6f6b1724837536942ad8b.JPEG", "http"))
+	}
+	{
+		sd := SuperDog{}
+		sd.Eat()
+	}
+	{
+		c := C{B{}}
+		c.S()
+		c.P()
+
+	}
+	{
+		refundRecord, err := json.Marshal(&GenVideoTradingData{CoinsChangedAmount: 1, SubCoinsChangedAmount: 3, SubPeriodType: 5})
+		if err != nil {
+			fmt.Println("err:", err)
+		}
+		fmt.Println("refundRecord: ", string(refundRecord))
+
+		test := "{\"refund_info\":{\"sub_period_type\":5,\"coins_changed_amount\":1,\"sub_coins_changed_amount\":3}}"
+		genVideoTradingRecord := GenVideoTradingRecord{}
+		err = json.Unmarshal([]byte(test), &genVideoTradingRecord)
+		if err != nil {
+			fmt.Println("err2:", err)
+		}
+		fmt.Println("genVideoTradingRecord: ", genVideoTradingRecord)
+
+	}
+	{
+		var intf interface{}
+
+		if intf == nil {
+			fmt.Println("intf", intf)
+		}
+		if tt, ok := intf.(bool); ok {
+			fmt.Println("11111", tt)
+		}
+	}
+	{
+		m, err := utilcode.GenUserSig(20010493, "13df58e129c5b4b3cfdec477007918206558d45e10cc8bbc13412bb7beccf3f5", "administrator", 3600)
+		if err != nil {
+			fmt.Printf("err: %v", err)
+		}
+		fmt.Printf("m: %v", m)
+
+	}
+	{
+		test := []string{"333", "gdgsd"}
+		fmt.Println(strings.Join(test, ","))
+	}
+	{
+
+	}
+	{
+		word := "apple"
+		trie := trietreecode.Constructor()
+		trie.Insert(word)
+		fmt.Println(trie.Search(word))
+	}
+	{
+		word := "apple"
+		for i := 0; i < len(word); i++ {
+			fmt.Println(word[i] - 'a')
+		}
+	}
+	{
+		i := int64(5)
+		fmt.Println(float64(i) / 100)
+	}
+
+	{
+		var test map[int][]int
+		fmt.Println(test == nil)
+		fmt.Println(len(test[1]))
+	}
+	{
+		fmt.Println(float64(40) / 100)
+
+	}
+	{
+		var m map[int]int
+		x := 1
+		if _, ok := m[x]; !ok && len(m) > 0 {
+			fmt.Println("tt", ok)
+		}
+	}
+	{
+		test := make([]int, 0, 10)
+		for i := 0; i < 10; i++ {
+			test = append(test, i)
+		}
+		fmt.Printf("len test %v", len(test))
+		fmt.Printf("len test1 %v", len(test[1:5]))
+
+	}
+	{
+		unit := int(Unit(uint64(36145196)))
+		tableVal := unit % (kCurrencyRecordDBNum * kCurrencyRecordTableNum)
+		dbId := tableVal / kCurrencyRecordTableNum
+		tableId := tableVal % kCurrencyRecordTableNum
+		fmt.Printf("dbId: %v, tableId: %v", dbId, tableId)
+
+	}
+	{
+		ov, err := url.QueryUnescape("\b\x83\xf86\x10\x83\xf86\x18\x90\xaf\x86\xac\x9e/(\x01B\x02QAp\x13\x88\x01\x01")
+		if err != nil {
+			fmt.Println("err1: ", err)
+		}
+		fmt.Println(string(ov))
+		//usr := &pb.UserBasicInfo{}
+		//if err = proto.Unmarshal([]byte(ov), usr); err != nil {
+		//	fmt.Println("err2: ", err)
+		//}
+		//fmt.Println(usr)
+
+	}
+	{
+		slice := make([]int, 0, 30)
+		slice2 := make([]int, 0, 30)
+		slice3 := slice
+
+		slice = append(slice, 3)
+		slice = append(slice, 3)
+		slice = append(slice, 10)
+		slice = append(slice, 3)
+		slice = append(slice, 3)
+		slice = append(slice, 3)
+		fmt.Println(len(slice))
+
+		fmt.Println(len(slice[:3]))
+		slice2 = append(slice[:1], make([]int, 6-len(slice[:1]))...)
+
+		fmt.Println(slice2)
+		fmt.Println(slice3)
+
+	}
+	{
+		p, _ := ants.NewPool(10)
+		defer p.Release()
+
+		var wg sync.WaitGroup
+		for i := 0; i < 20; i++ {
+			wg.Add(1)
+			p.Submit(taskFuncWrapper(i, &wg))
+		}
+		wg.Wait()
+	}
 	{
 		// 创建一个对象池
 		pool := &sync.Pool{
@@ -392,635 +1327,635 @@ func main() {
 	{
 		now := time.Now().UnixMilli()
 		fmt.Println("ttime, now: ", now, "end: ", 1706262000000)
->>>>>>> Stashed changes
 
-	{
-		testMap := map[int]*SvipInterestsResource{1: {ID: 1, Test: "1"}, 2: {ID: 2}, 3: {ID: 3}}
+		{
+			testMap := map[int]*SvipInterestsResource{1: {ID: 1, Test: "1"}, 2: {ID: 2}, 3: {ID: 3}}
 
-		newTestMap := make(map[int]*SvipInterestsResource)
-		for k, v := range testMap {
-			newTestMap[k] = v
+			newTestMap := make(map[int]*SvipInterestsResource)
+			for k, v := range testMap {
+				newTestMap[k] = v
+			}
+			fmt.Println(newTestMap)
 		}
-		fmt.Println(newTestMap)
-	}
-	{
-		stest := make([]int, 10, 12)
-		stest1 := stest[8:]
-		arrayAddr := (*int)(unsafe.Pointer(&stest1[0]))
-		fmt.Printf("切片底层数组的地址: %p, len: %v\n", arrayAddr, len(stest1))
-		changeSlice(stest1)
-		stest1 = stest1[:3]
-		fmt.Printf("s: %v, len of s: %d, cap of s: %d\n", stest, len(stest), cap(stest))
-		fmt.Printf("s1: %v, len of s1: %d, cap of s1: %d, stest1[2]: %v\n", stest1, len(stest1), cap(stest1), stest1[2])
-		arrayAddr = (*int)(unsafe.Pointer(&stest1[0]))
-		fmt.Printf("切片底层数组的地址: %p, len: %v\n", arrayAddr, len(stest1))
-	}
+		{
+			stest := make([]int, 10, 12)
+			stest1 := stest[8:]
+			arrayAddr := (*int)(unsafe.Pointer(&stest1[0]))
+			fmt.Printf("切片底层数组的地址: %p, len: %v\n", arrayAddr, len(stest1))
+			changeSlice(stest1)
+			stest1 = stest1[:3]
+			fmt.Printf("s: %v, len of s: %d, cap of s: %d\n", stest, len(stest), cap(stest))
+			fmt.Printf("s1: %v, len of s1: %d, cap of s1: %d, stest1[2]: %v\n", stest1, len(stest1), cap(stest1), stest1[2])
+			arrayAddr = (*int)(unsafe.Pointer(&stest1[0]))
+			fmt.Printf("切片底层数组的地址: %p, len: %v\n", arrayAddr, len(stest1))
+		}
 
-	mm := map[int]int{1: 1}
-	misccode.MapCopy(mm)
-	fmt.Println(mm)
+		mm := map[int]int{1: 1}
+		misccode.MapCopy(mm)
+		fmt.Println(mm)
 
-	numsRoate := []int{1, 2, 3, 4, 5, 6, 7}
-	misccode.Rotate3(numsRoate, 3)
-	fmt.Println(numsRoate)
+		numsRoate := []int{1, 2, 3, 4, 5, 6, 7}
+		misccode.Rotate3(numsRoate, 3)
+		fmt.Println(numsRoate)
 
-	numsInsertArray := []int{1, 2, 3, 4, 5}
-	fmt.Println(reflect.TypeOf(numsInsertArray).Kind())
-	fmt.Println(misccode.InsertArray(numsInsertArray, 6, 100))
+		numsInsertArray := []int{1, 2, 3, 4, 5}
+		fmt.Println(reflect.TypeOf(numsInsertArray).Kind())
+		fmt.Println(misccode.InsertArray(numsInsertArray, 6, 100))
 
-	fmt.Println(misccode.MaxSlidingWindow([]int{1, 3, -1, -3, 5, 3, 6, 7}, 3))
+		fmt.Println(misccode.MaxSlidingWindow([]int{1, 3, -1, -3, 5, 3, 6, 7}, 3))
 
-	fmt.Println(misccode.MinWindow("ADOBECODEBANC", "ABC"))
-	var ans []interface{}
-	// ans = []SvipInterestsResource{}
-	//if vres, ok := ans.(int); ok {
-	//	fmt.Println(vres)
-	//}
-	fmt.Println(reflect.TypeOf(ans))
+		fmt.Println(misccode.MinWindow("ADOBECODEBANC", "ABC"))
+		var ans []interface{}
+		// ans = []SvipInterestsResource{}
+		//if vres, ok := ans.(int); ok {
+		//	fmt.Println(vres)
+		//}
+		fmt.Println(reflect.TypeOf(ans))
 
-	misccode.Trap42([]int{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1})
-	misccode.FindMedianSortedArrays([]int{0, 1}, []int{2})
+		misccode.Trap42([]int{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1})
+		misccode.FindMedianSortedArrays([]int{0, 1}, []int{2})
 
-	mn := int64(1)
-	fmt.Println(mn == 1)
+		mn := int64(1)
+		fmt.Println(mn == 1)
 
-	misccode.PartitionLabels("ababcbacadefegdehijhklij")
-	cmf := misccode.ConstructorMedianFinder2()
-	cmf.AddNum(-1)
-	cmf.AddNum(-2)
-	cmf.AddNum(-3)
-	fmt.Println(cmf.FindMedian())
-	cmf.AddNum(-4)
-	cmf.AddNum(-5)
-	//cngmf.AddNum(0)
-	//cmf.AddNum(6)
-	//cmf.AddNum(3)
-	//cmf.AddNum(1)
-	//cmf.AddNum(0)
-	//cmf.AddNum(0)
+		misccode.PartitionLabels("ababcbacadefegdehijhklij")
+		cmf := misccode.ConstructorMedianFinder2()
+		cmf.AddNum(-1)
+		cmf.AddNum(-2)
+		cmf.AddNum(-3)
+		fmt.Println(cmf.FindMedian())
+		cmf.AddNum(-4)
+		cmf.AddNum(-5)
+		//cngmf.AddNum(0)
+		//cmf.AddNum(6)
+		//cmf.AddNum(3)
+		//cmf.AddNum(1)
+		//cmf.AddNum(0)
+		//cmf.AddNum(0)
 
-	svipR := &SvipInterestsResource{
-		ID:   1,
-		Type: 10,
-		Test: "98989",
-	}
-	svipRB, _ := json.Marshal(svipR)
-	fmt.Println(string(svipRB))
-	svipRB = []byte("{\"id\":1,\"test\":\"98989\",\"type\":10, \"yuyu\":78}")
-	fmt.Println(string(svipRB))
-	svipS := &SvipInterestsResource{}
-	json.Unmarshal(svipRB, svipS)
-	fmt.Println(svipS)
+		svipR := &SvipInterestsResource{
+			ID:   1,
+			Type: 10,
+			Test: "98989",
+		}
+		svipRB, _ := json.Marshal(svipR)
+		fmt.Println(string(svipRB))
+		svipRB = []byte("{\"id\":1,\"test\":\"98989\",\"type\":10, \"yuyu\":78}")
+		fmt.Println(string(svipRB))
+		svipS := &SvipInterestsResource{}
+		json.Unmarshal(svipRB, svipS)
+		fmt.Println(svipS)
 
-	// test1 := []int{10, -3, 0, 5, 9}
-	head108 := misccode.SortedArrayToBST([]int{1, 3})
-	fmt.Println(head108)
+		// test1 := []int{10, -3, 0, 5, 9}
+		head108 := misccode.SortedArrayToBST([]int{1, 3})
+		fmt.Println(head108)
 
-	newNodes := make([]*misccode.ListNode, 5)
-	fmt.Println(newNodes[1].Val)
+		newNodes := make([]*misccode.ListNode, 5)
+		fmt.Println(newNodes[1].Val)
 
-	dHead := &misccode.ListNode{}
-	dh := dHead
-	for i := 0; i < 2; i++ {
-		dh.Next = &misccode.ListNode{Val: i + 1}
-		dh = dh.Next
-	}
+		dHead := &misccode.ListNode{}
+		dh := dHead
+		for i := 0; i < 2; i++ {
+			dh.Next = &misccode.ListNode{Val: i + 1}
+			dh = dh.Next
+		}
 
-	misccode.ReverseKGroup(dHead.Next, 2)
+		misccode.ReverseKGroup(dHead.Next, 2)
 
-	fmt.Println(strings.Join([]string{"sfag"}, ","))
-	fmt.Println(strings.Split("sfag", ","))
+		fmt.Println(strings.Join([]string{"sfag"}, ","))
+		fmt.Println(strings.Split("sfag", ","))
 
-	ists := make(map[string]SvipInterestsInformation)
-	for i := 1; i <= 4; i++ {
-		ists[fmt.Sprint(i)] = SvipInterestsInformation{
-			Resources: []SvipInterestsResource{
-				{ID: 1, Type: 20},
-				{ID: 2, Type: 30},
+		ists := make(map[string]SvipInterestsInformation)
+		for i := 1; i <= 4; i++ {
+			ists[fmt.Sprint(i)] = SvipInterestsInformation{
+				Resources: []SvipInterestsResource{
+					{ID: 1, Type: 20},
+					{ID: 2, Type: 30},
+				},
+			}
+		}
+		istsB, err := json.Marshal(ists)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(string(istsB))
+
+		f1, err := os.Open("/Users/mico/svip_interests.json")
+		defer f1.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		b, err := ioutil.ReadAll(f1)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(string(b))
+		jsonData := `{"1":"{\"resources\": [{\"id\": 40,\"type\":2},{\"id\": 20,\"type\":1}]","2":"{\"resources\": [{\"id\": 40,\"type\":2},{\"id\": 20,\"type\":1}]","3":"{\"resources\": [{\"id\": 40,\"type\":2},{\"id\": 20,\"type\":1}]","4":"{\"resources\": [{\"id\": 40,\"type\":2},{\"id\": 20,\"type\":1}]"}`
+
+		interests := make(map[string]SvipInterestsInformation)
+		err2 := json.Unmarshal([]byte(jsonData), &interests)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+
+		var strrr []string
+		fmt.Println(SAArrayToString(strrr, "|"))
+		fmt.Println(len(SAArrayToString(strrr, "|")))
+		fmt.Println(len(SAArrayToString([]string{}, "|")))
+		fmt.Println(len(""))
+
+		fmt.Println(SAArrayToString([]string{"", "", "", ""}, "|"))
+		fmt.Println(len(SAStringToArray("|||", "|")))
+
+		nums := []int{1, 2, 3, 4, 5, 6, 7}
+		misccode.Rotate(nums, 3)
+		fmt.Println(nums)
+
+		fmt.Printf("%T\n", make([]int, 0))
+		fmt.Printf("%T\n", make(map[int]int))
+		fmt.Printf("%T\n", make(chan int))
+		i := 0
+		fmt.Printf("%T\n", &i)
+
+		fmt.Println(len(strings.Split("ga", ",")))
+		fmt.Println(len(strings.Split("falkjg", ",")))
+		fmt.Println(len(strings.Split("fal,kjg", ",")))
+		ctx := context.Background()
+		ctx = context.WithValue(ctx, "ddd", 111)
+		//ctx = context.WithValue(ctx, "ddd", 222)
+		ctx = ctxx(ctx)
+		ctxx, _ := context.WithTimeout(ctx, time.Duration(10))
+		fmt.Println(ctxx.Value("ddd"))
+
+		misccode.MaximalRectangle([][]byte{{'1', '0', '1', '0', '0'}, {'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}})
+		fmt.Println(int('1' - '0'))
+		misccode.LongestValidParentheses("(()))())(")
+
+		fmt.Println(3 < 3) // false
+		var m map[int]Resource
+		fmt.Println(m == nil)
+		fmt.Println(m[1].Count == 1)
+
+		fmt.Println(len(strings.Split("11", ",")))
+		fmt.Println(strings.Split("11", ",")[0])
+		coins, err := json.Marshal(FamilyBoxCoinss)
+		if err == nil {
+			fmt.Println(string(coins))
+		}
+		active, err := json.Marshal(FamilyBoxActive)
+		if err == nil {
+			fmt.Println(string(active))
+		}
+		resources, err := json.Marshal(FamilyBoxResources)
+		if err == nil {
+			fmt.Println(string(resources))
+		}
+
+		//fbc := FamilyBoxCoinsT{}
+		//err = json.Unmarshal(coins, &fbc)
+		//if err == nil {
+		//	fmt.Println(fbc)
+		//}
+
+		page := []string{"fda", "gf", "qw", "ert"}
+		fmt.Println(page[3:5])
+		fmt.Println("2023-06-25 02:52:08" > "2023-06-21 06:32:00")
+
+		fmt.Println(strings.Split("sfag", ","))
+		fmt.Println(strings.Join([]string{"fa", "gd", "nnmm"}, ","))
+		fmt.Println(strings.Split(strings.Join([]string{"fa", "gd", "nnmm"}, ","), ","))
+
+		extend := &struct {
+			GiftType     int64 `json:"giftType"`
+			FromFunction int64 `json:"from_function"`
+		}{}
+
+		err = json.Unmarshal([]byte("{\"avtSessionId\":\"\",\"fromUserFamily\":2002806,\"from_function\":0,\"giftType\":3,\"giftsConsumeCoins\":3999,\"toUserFamily\":2002806}"), extend)
+		fmt.Println(err)
+
+		misccode.CalcEquation([][]string{{"a", "b"}, {"c", "d"}}, []float64{1.0, 1.0}, [][]string{{"a", "c"}, {"b", "d"}, {"b", "a"}, {"d", "c"}})
+
+		fmt.Println(fmt.Sprintf("falkjfa ", 111))
+		fmt.Println(FamilyLevelConfigMap[1].GiftAging)
+		//[[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]]
+		//[[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]] 20
+		// [[1,2,3,4,5],[6,7,8,9,10],[11,12,13,14,15],[16,17,18,19,20],[21,22,23,24,25]] 19
+		fmt.Println(misccode.SearchMatrix([][]int{{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}, {11, 12, 13, 14, 15}, {16, 17, 18, 19, 20}, {21, 22, 23, 24, 25}}, 19))
+
+		ctx = context.Background()
+		ctx = context.WithValue(ctx, "TRACEID", 1234567890)
+
+		misccode.DEBUGT(nil, "TEST DEBUGT: %s", "test debugt")
+
+		ftbg := []FamilyTaskBoxGift{
+			{
+				GiftImg:   "giftImg1",
+				GiftName:  "giftName1",
+				GiftAging: "giftAging1",
+				GiftCount: 14,
+			},
+			{
+				GiftImg:   "giftImg2",
+				GiftName:  "giftName2",
+				GiftAging: "giftAging2",
+				GiftCount: 24,
 			},
 		}
-	}
-	istsB, err := json.Marshal(ists)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(string(istsB))
+		ftbgB, _ := json.Marshal(&ftbg)
+		fmt.Println(string(ftbgB))
 
-	f1, err := os.Open("/Users/mico/svip_interests.json")
-	defer f1.Close()
-	if err != nil {
-		fmt.Println(err)
-	}
+		ftbg1 := []FamilyTaskBoxGift{}
+		json.Unmarshal(ftbgB, &ftbg1)
+		fmt.Println(ftbg1)
 
-	b, err := ioutil.ReadAll(f1)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(string(b))
-	jsonData := `{"1":"{\"resources\": [{\"id\": 40,\"type\":2},{\"id\": 20,\"type\":1}]","2":"{\"resources\": [{\"id\": 40,\"type\":2},{\"id\": 20,\"type\":1}]","3":"{\"resources\": [{\"id\": 40,\"type\":2},{\"id\": 20,\"type\":1}]","4":"{\"resources\": [{\"id\": 40,\"type\":2},{\"id\": 20,\"type\":1}]"}`
+		fmt.Println(time.Now().Sub(time.Unix(1685607961, 0)).Hours() < 24)
 
-	interests := make(map[string]SvipInterestsInformation)
-	err2 := json.Unmarshal([]byte(jsonData), &interests)
-	if err2 != nil {
-		fmt.Println(err2)
-	}
+		fmt.Println(time.Now().Format("2006-01-02"))
 
-	var strrr []string
-	fmt.Println(SAArrayToString(strrr, "|"))
-	fmt.Println(len(SAArrayToString(strrr, "|")))
-	fmt.Println(len(SAArrayToString([]string{}, "|")))
-	fmt.Println(len(""))
+		fmt.Println(time.Unix(0, 1665705599000).Format("2006-01-02 15:04:05"))
 
-	fmt.Println(SAArrayToString([]string{"", "", "", ""}, "|"))
-	fmt.Println(len(SAStringToArray("|||", "|")))
+		xt := []byte{8,
+			242,
+			247,
+			54,
+			18,
+			38,
+			105,
+			109,
+			97,
+			103,
+			101,
+			47,
+			53,
+			54,
+			51,
+			99,
+			99,
+			53,
+			48,
+			57,
+			101,
+			100,
+			55,
+			98,
+			54,
+			101,
+			48,
+			55,
+			55,
+			54,
+			57,
+			100,
+			54,
+			51,
+			55,
+			99,
+			48,
+			101,
+			56,
+			101,
+			57,
+			52,
+			53,
+			54,
+			26,
+			30,
+			229,
+			147,
+			136,
+			229,
+			147,
+			136,
+			229,
+			147,
+			136,
+			229,
+			147,
+			136,
+			229,
+			147,
+			136,
+			229,
+			147,
+			136,
+			229,
+			147,
+			136,
+			229,
+			147,
+			136,
+			229,
+			147,
+			136,
+			229,
+			147,
+			136,
+			34,
+			2,
+			69,
+			71,
+			96,
+			40}
+		fmt.Println(string(xt))
+		misccode.ThreeSumClosest([]int{-1, 2, 1, -4}, 1)
+		misccode.SearchX([]int{1, 2, 3, 5, 4, 2})
+		fmt.Println(test2())
+		fmt.Println(test())
+		tTreeNodes := []*misccode.TreeNode{}
+		var ttn *misccode.TreeNode
+		tTreeNodes = append(tTreeNodes, ttn)
+		fmt.Println(len(tTreeNodes[1:1]))
+		fmt.Println(len(tTreeNodes[1:]))
 
-	nums := []int{1, 2, 3, 4, 5, 6, 7}
-	misccode.Rotate(nums, 3)
-	fmt.Println(nums)
+		rt := &misccode.TreeNode{Val: 1}
+		rt.Left = &misccode.TreeNode{Val: 2}
+		rt.Right = &misccode.TreeNode{Val: 5}
+		rt.Left.Left = &misccode.TreeNode{Val: 3}
+		rt.Left.Right = &misccode.TreeNode{Val: 4}
+		rt.Right.Right = &misccode.TreeNode{Val: 6}
+		misccode.Flatten(rt)
+		misccode.Insert()
+		misccode.SearchInsert([]int{1, 2, 3, 4, 5}, 6)
+		fmt.Println(misccode.MaxSum([]int{-2, 1, -3, 4, -1, 2, 1, -5, 4}))
 
-	fmt.Printf("%T\n", make([]int, 0))
-	fmt.Printf("%T\n", make(map[int]int))
-	fmt.Printf("%T\n", make(chan int))
-	i := 0
-	fmt.Printf("%T\n", &i)
+		misccode.MinSubArrayLen3(7, []int{2, 3, 1, 2, 4, 3})
+		misccode.MinSubArrayLen2(15, []int{1, 2, 3, 4, 5})
+		misccode.FindAnagrams("ababababab", "aab")
+		misccode.ShortestSubarray([]int{17, 85, 93, -45, -21}, 150)
+		misccode.MinSubArrayLen(7, []int{2, 3, 1, 2, 4, 3})
+		misccode.NumberOfSubarrays([]int{2, 2, 2, 1, 2, 2, 1, 2, 2, 2}, 2)
+		misccode.Subsets([]int{1, 2, 3})
+		misccode.SliceT()
+		misccode.ReconstructQueue([][]int{{7, 0}, {4, 4}, {7, 1}, {5, 0}, {6, 1}, {5, 2}})
+		misccode.DecodeString("3[a]2[bc]")
 
-	fmt.Println(len(strings.Split("ga", ",")))
-	fmt.Println(len(strings.Split("falkjg", ",")))
-	fmt.Println(len(strings.Split("fal,kjg", ",")))
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, "ddd", 111)
-	//ctx = context.WithValue(ctx, "ddd", 222)
-	ctx = ctxx(ctx)
-	ctxx, _ := context.WithTimeout(ctx, time.Duration(10))
-	fmt.Println(ctxx.Value("ddd"))
+		fmt.Println(misccode.MaxValue([]int{1, 3, 4}, []int{15, 20, 30}, 4))
+		misccode.MaximalSquare([][]byte{{'1', '0', '1', '0', '0'}, {'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}})
+		misccode.MaxProduct([]int{2, 3, -2, 4})
+		misccode.Merge([][]int{{2, 3}, {2, 2}, {3, 3}, {1, 3}, {5, 7}, {2, 2}, {4, 6}})
 
-	misccode.MaximalRectangle([][]byte{{'1', '0', '1', '0', '0'}, {'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}})
-	fmt.Println(int('1' - '0'))
-	misccode.LongestValidParentheses("(()))())(")
+		misccode.LengthOfLIS([]int{10, 9, 2, 5, 3, 7, 101, 18})
+		misccode.NumIslands([][]byte{{'1', '1', '1', '1', '0'}, {'1', '1', '0', '1', '0'}, {'1', '1', '0', '0', '0'}, {'0', '0', '0', '0', '0'}})
+		misccode.CanPartitionKSubsets14([]int{4, 3, 2, 3, 5, 2, 1}, 4)
+		misccode.Exist([][]byte{{'a', 'b', 'c'}, {'a', 'e', 'd'}, {'a', 'f', 'g'}}, "abcdefg")
+		stt := misccode.LongestDupSubstring("")
+		fmt.Println(stt)
+		return
+		misccode.SubsetsWithDup([]int{1, 2, 2})
+		//stt := misccode.LongestDupSubstring("")
+		//fmt.Println(stt)
+		//return
+		misccode.CanPartitionKSubsets([]int{1, 2, 2, 2, 2}, 3)
 
-	fmt.Println(3 < 3) // false
-	var m map[int]Resource
-	fmt.Println(m == nil)
-	fmt.Println(m[1].Count == 1)
+		// misccode.LongestConsecutive([]int{100, 4, 200, 1, 3, 2})
+		s := "abcd"
+		wordDict := []string{"a", "b", "c", "ab", "bc"}
+		fmt.Println(misccode.WordBreak(s, wordDict))
+		return
 
-	fmt.Println(len(strings.Split("11", ",")))
-	fmt.Println(strings.Split("11", ",")[0])
-	coins, err := json.Marshal(FamilyBoxCoinss)
-	if err == nil {
-		fmt.Println(string(coins))
-	}
-	active, err := json.Marshal(FamilyBoxActive)
-	if err == nil {
-		fmt.Println(string(active))
-	}
-	resources, err := json.Marshal(FamilyBoxResources)
-	if err == nil {
-		fmt.Println(string(resources))
-	}
+		s = "abc"
+		enumcode.AllSubsquences(s)
+		return
 
-	//fbc := FamilyBoxCoinsT{}
-	//err = json.Unmarshal(coins, &fbc)
-	//if err == nil {
-	//	fmt.Println(fbc)
-	//}
+		s = "abc"
+		enumcode.Permutations(s)
+		return
+		//s1 := "abc"
+		//enumcode.AllSubsquences(s1)
+		fmt.Println(misccode.GenerateParenthesis(3))
+		fmt.Println(misccode.IsValid("()[]{}"))
+		misccode.LetterCombinations2("23")
+		queuecode.LevelOrder(nil)
 
-	page := []string{"fda", "gf", "qw", "ert"}
-	fmt.Println(page[3:5])
-	fmt.Println("2023-06-25 02:52:08" > "2023-06-21 06:32:00")
+		misccode.LengthOfLongestSubstring("abcabcbb")
 
-	fmt.Println(strings.Split("sfag", ","))
-	fmt.Println(strings.Join([]string{"fa", "gd", "nnmm"}, ","))
-	fmt.Println(strings.Split(strings.Join([]string{"fa", "gd", "nnmm"}, ","), ","))
+		misccode.ReversePairs([]int{1, 3, 2, 3, 1})
 
-	extend := &struct {
-		GiftType     int64 `json:"giftType"`
-		FromFunction int64 `json:"from_function"`
-	}{}
+		nums = []int{1, 4, 2, 6, 3, 0, 9}
+		misccode.QuickSort2(nums)
+		fmt.Println(nums)
 
-	err = json.Unmarshal([]byte("{\"avtSessionId\":\"\",\"fromUserFamily\":2002806,\"from_function\":0,\"giftType\":3,\"giftsConsumeCoins\":3999,\"toUserFamily\":2002806}"), extend)
-	fmt.Println(err)
+		// n皇后
+		enumcode.Nqueen(4)
+		return
 
-	misccode.CalcEquation([][]string{{"a", "b"}, {"c", "d"}}, []float64{1.0, 1.0}, [][]string{{"a", "c"}, {"b", "d"}, {"b", "a"}, {"d", "c"}})
+		// 三数之和
+		// fmt.Println(misccode.ThreeNumsSum([]int{-1, 0, 1, 2, -1, -4}, 0))
 
-	fmt.Println(fmt.Sprintf("falkjfa ", 111))
-	fmt.Println(FamilyLevelConfigMap[1].GiftAging)
-	//[[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]]
-	//[[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]] 20
-	// [[1,2,3,4,5],[6,7,8,9,10],[11,12,13,14,15],[16,17,18,19,20],[21,22,23,24,25]] 19
-	fmt.Println(misccode.SearchMatrix([][]int{{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}, {11, 12, 13, 14, 15}, {16, 17, 18, 19, 20}, {21, 22, 23, 24, 25}}, 19))
+		// 字符串相同字符统计,空间复杂度O(1)
+		s = "abbccc"
+		st := enumcode.SameCharsCount(s)
+		fmt.Println(st)
+		return
 
-	ctx = context.Background()
-	ctx = context.WithValue(ctx, "TRACEID", 1234567890)
+		// 字符串子串
+		s = "abcd"
+		sss := enumcode.AllSubStrs(s)
+		fmt.Println(sss)
+		return
 
-	misccode.DEBUGT(nil, "TEST DEBUGT: %s", "test debugt")
+		// 字符串全排列
+		s = "abc"
+		enumcode.Permutations(s)
+		return
 
-	ftbg := []FamilyTaskBoxGift{
-		{
-			GiftImg:   "giftImg1",
-			GiftName:  "giftName1",
-			GiftAging: "giftAging1",
-			GiftCount: 14,
-		},
-		{
-			GiftImg:   "giftImg2",
-			GiftName:  "giftName2",
-			GiftAging: "giftAging2",
-			GiftCount: 24,
-		},
-	}
-	ftbgB, _ := json.Marshal(&ftbg)
-	fmt.Println(string(ftbgB))
+		// 字符串子序列
+		s = "abc"
+		enumcode.AllSubsquences(s)
+		return
 
-	ftbg1 := []FamilyTaskBoxGift{}
-	json.Unmarshal(ftbgB, &ftbg1)
-	fmt.Println(ftbg1)
+		nums = []int{30, 1, 20, 4, 6}
+		lessMoney := greedycode.LessMoneySplitGold(nums)
+		fmt.Println(lessMoney)
+		return
 
-	fmt.Println(time.Now().Sub(time.Unix(1685607961, 0)).Hours() < 24)
-
-	fmt.Println(time.Now().Format("2006-01-02"))
-
-	fmt.Println(time.Unix(0, 1665705599000).Format("2006-01-02 15:04:05"))
-
-	xt := []byte{8,
-		242,
-		247,
-		54,
-		18,
-		38,
-		105,
-		109,
-		97,
-		103,
-		101,
-		47,
-		53,
-		54,
-		51,
-		99,
-		99,
-		53,
-		48,
-		57,
-		101,
-		100,
-		55,
-		98,
-		54,
-		101,
-		48,
-		55,
-		55,
-		54,
-		57,
-		100,
-		54,
-		51,
-		55,
-		99,
-		48,
-		101,
-		56,
-		101,
-		57,
-		52,
-		53,
-		54,
-		26,
-		30,
-		229,
-		147,
-		136,
-		229,
-		147,
-		136,
-		229,
-		147,
-		136,
-		229,
-		147,
-		136,
-		229,
-		147,
-		136,
-		229,
-		147,
-		136,
-		229,
-		147,
-		136,
-		229,
-		147,
-		136,
-		229,
-		147,
-		136,
-		229,
-		147,
-		136,
-		34,
-		2,
-		69,
-		71,
-		96,
-		40}
-	fmt.Println(string(xt))
-	misccode.ThreeSumClosest([]int{-1, 2, 1, -4}, 1)
-	misccode.SearchX([]int{1, 2, 3, 5, 4, 2})
-	fmt.Println(test2())
-	fmt.Println(test())
-	tTreeNodes := []*misccode.TreeNode{}
-	var ttn *misccode.TreeNode
-	tTreeNodes = append(tTreeNodes, ttn)
-	fmt.Println(len(tTreeNodes[1:1]))
-	fmt.Println(len(tTreeNodes[1:]))
-
-	rt := &misccode.TreeNode{Val: 1}
-	rt.Left = &misccode.TreeNode{Val: 2}
-	rt.Right = &misccode.TreeNode{Val: 5}
-	rt.Left.Left = &misccode.TreeNode{Val: 3}
-	rt.Left.Right = &misccode.TreeNode{Val: 4}
-	rt.Right.Right = &misccode.TreeNode{Val: 6}
-	misccode.Flatten(rt)
-	misccode.Insert()
-	misccode.SearchInsert([]int{1, 2, 3, 4, 5}, 6)
-	fmt.Println(misccode.MaxSum([]int{-2, 1, -3, 4, -1, 2, 1, -5, 4}))
-
-	misccode.MinSubArrayLen3(7, []int{2, 3, 1, 2, 4, 3})
-	misccode.MinSubArrayLen2(15, []int{1, 2, 3, 4, 5})
-	misccode.FindAnagrams("ababababab", "aab")
-	misccode.ShortestSubarray([]int{17, 85, 93, -45, -21}, 150)
-	misccode.MinSubArrayLen(7, []int{2, 3, 1, 2, 4, 3})
-	misccode.NumberOfSubarrays([]int{2, 2, 2, 1, 2, 2, 1, 2, 2, 2}, 2)
-	misccode.Subsets([]int{1, 2, 3})
-	misccode.SliceT()
-	misccode.ReconstructQueue([][]int{{7, 0}, {4, 4}, {7, 1}, {5, 0}, {6, 1}, {5, 2}})
-	misccode.DecodeString("3[a]2[bc]")
-
-	fmt.Println(misccode.MaxValue([]int{1, 3, 4}, []int{15, 20, 30}, 4))
-	misccode.MaximalSquare([][]byte{{'1', '0', '1', '0', '0'}, {'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}})
-	misccode.MaxProduct([]int{2, 3, -2, 4})
-	misccode.Merge([][]int{{2, 3}, {2, 2}, {3, 3}, {1, 3}, {5, 7}, {2, 2}, {4, 6}})
-
-	misccode.LengthOfLIS([]int{10, 9, 2, 5, 3, 7, 101, 18})
-	misccode.NumIslands([][]byte{{'1', '1', '1', '1', '0'}, {'1', '1', '0', '1', '0'}, {'1', '1', '0', '0', '0'}, {'0', '0', '0', '0', '0'}})
-	misccode.CanPartitionKSubsets14([]int{4, 3, 2, 3, 5, 2, 1}, 4)
-	misccode.Exist([][]byte{{'a', 'b', 'c'}, {'a', 'e', 'd'}, {'a', 'f', 'g'}}, "abcdefg")
-	stt := misccode.LongestDupSubstring("")
-	fmt.Println(stt)
-	return
-	misccode.SubsetsWithDup([]int{1, 2, 2})
-	//stt := misccode.LongestDupSubstring("")
-	//fmt.Println(stt)
-	//return
-	misccode.CanPartitionKSubsets([]int{1, 2, 2, 2, 2}, 3)
-
-	// misccode.LongestConsecutive([]int{100, 4, 200, 1, 3, 2})
-	s := "abcd"
-	wordDict := []string{"a", "b", "c", "ab", "bc"}
-	fmt.Println(misccode.WordBreak(s, wordDict))
-	return
-
-	s = "abc"
-	enumcode.AllSubsquences(s)
-	return
-
-	s = "abc"
-	enumcode.Permutations(s)
-	return
-	//s1 := "abc"
-	//enumcode.AllSubsquences(s1)
-	fmt.Println(misccode.GenerateParenthesis(3))
-	fmt.Println(misccode.IsValid("()[]{}"))
-	misccode.LetterCombinations2("23")
-	queuecode.LevelOrder(nil)
-
-	misccode.LengthOfLongestSubstring("abcabcbb")
-
-	misccode.ReversePairs([]int{1, 3, 2, 3, 1})
-
-	nums = []int{1, 4, 2, 6, 3, 0, 9}
-	misccode.QuickSort2(nums)
-	fmt.Println(nums)
-
-	// n皇后
-	enumcode.Nqueen(4)
-	return
-
-	// 三数之和
-	// fmt.Println(misccode.ThreeNumsSum([]int{-1, 0, 1, 2, -1, -4}, 0))
-
-	// 字符串相同字符统计,空间复杂度O(1)
-	s = "abbccc"
-	st := enumcode.SameCharsCount(s)
-	fmt.Println(st)
-	return
-
-	// 字符串子串
-	s = "abcd"
-	sss := enumcode.AllSubStrs(s)
-	fmt.Println(sss)
-	return
-
-	// 字符串全排列
-	s = "abc"
-	enumcode.Permutations(s)
-	return
-
-	// 字符串子序列
-	s = "abc"
-	enumcode.AllSubsquences(s)
-	return
-
-	nums = []int{30, 1, 20, 4, 6}
-	lessMoney := greedycode.LessMoneySplitGold(nums)
-	fmt.Println(lessMoney)
-	return
-
-	testM := map[string]interface{}{
-		"start_price":         1,
-		"distance_unit_price": 4,
-		"time_unit_price":     6,
-	}
-	type testT struct {
-		StartPrice        int `json:"start_price"`
-		DistanceUnitPrice int `json:"distance_unit_price"`
-		TimeUnitPrice     int `json:"time_unit_price"`
-
-		BeginTime string `json:"begin_time"`
-		EndTime   string `json:"end_time"`
-	}
-	t := &testT{BeginTime: "111", EndTime: "222"}
-
-	utilcode.MapToStruct(testM, t)
-
-	fmt.Println(t)
-
-	return
-
-	set := setcode.NewSet()
-	set.Add("test")
-	fmt.Println(set.Has("test"))
-
-	ss := []string{"jibw", "ji", "jp", "bw", "jibw"}
-	res := greedycode.MinDicOrder(ss)
-	fmt.Println(res)
-	return
-
-	ss = []string{"ba", "b"}
-	res = greedycode.MinDicOrder(ss)
-	fmt.Println(res)
-	return
-
-	ss = []string{"a", "ac", "ab"}
-	res = greedycode.MinDicOrder(ss)
-	fmt.Println(res)
-
-	// trietreecode.TrieTree.Nodes = append(trietreecode.TrieTree.Nodes, &trietreecode.TrieTreeNode{})
-	trietreecode.Insert("activity")
-	trietreecode.Insert("act")
-	trietreecode.Insert("acd")
-
-	fmt.Printf("TrieTree: %v \n", trietreecode.PreCount("ac"))
-	trietreecode.Del("act")
-	fmt.Printf("TrieTree: %v \n", trietreecode.PreCount("ac"))
-	trietreecode.Del("activity")
-	fmt.Printf("TrieTree: %v \n", trietreecode.PreCount("ac"))
-
-	return
-
-	root := treecode.CreateCST(3)
-	treecode.PrintCst(root)
-	return
-
-	head := linklistcode.InitRandomList([]int{3, 1, 7, 8, 6, 2, 4})
-	headCopy := linklistcode.RandomNodeCopy(head)
-	for head != nil && headCopy != nil {
-
-		if head.Val != headCopy.Val || (head.Random != nil && headCopy.Random != nil && head.Random.Val != headCopy.Random.Val) {
-			fmt.Println(false)
-			break
+		testM := map[string]interface{}{
+			"start_price":         1,
+			"distance_unit_price": 4,
+			"time_unit_price":     6,
 		}
-		head = head.Next
-		headCopy = headCopy.Next
-	}
-	// return
+		type testT struct {
+			StartPrice        int `json:"start_price"`
+			DistanceUnitPrice int `json:"distance_unit_price"`
+			TimeUnitPrice     int `json:"time_unit_price"`
 
-	/*正则过滤*/
-	//s := ":请=求,错/误\n\r\t fsfafdf"
-	////	reg, _ := regexp.Compile(regStr)
-	//ss := RegFilter(s, regStr)
-	//fmt.Println(ss)
-	//return
-
-	/*链表回文判断*/
-	//arr := []int{1}
-	//h := linklistcode.InitLinkList(arr)
-	//fmt.Println(linklistcode.IsPalindrome(h))
-	//return
-
-	/*排序*/
-	arrTmp := utilcode.GenerateRandomArray(10, 30)
-	fmt.Println(arrTmp)
-	sortcode.Divide2(arrTmp, 5)
-	fmt.Println(arrTmp)
-
-	testTime := 500000
-	maxSize := 10
-	maxValue := 100
-	succeed := true
-
-	var arr1, arr2, arrOri []int
-	var f func([]int)
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Println(err)
-			fmt.Println("arrOri: ", arrOri)
+			BeginTime string `json:"begin_time"`
+			EndTime   string `json:"end_time"`
 		}
-	}()
-	for i := 0; i < testTime; i++ {
-		arr1 = utilcode.GenerateRandomArray(maxSize, maxValue)
-		arr2 = utilcode.CopyArray(arr1)
-		arrOri = utilcode.CopyArray(arr1)
-		//sortcode.InsertSort(arr1)
-		// sortcode.SelectSort(arr1)
-		// sortcode.MergeSort(arr1)
-		//sortcode.HeapSort(arr1)
-		// sortcode.BubbleSort(arr1)
-		//f = sortcode.QuickSort
-		//f(arr1)
-		//f = sortcode.CountSort
-		f = sortcode.RadixSort
-		f(arr1)
-		sort.Ints(arr2)
-		if !utilcode.IsEqual(arr1, arr2) {
-			succeed = false
-			break
+		t := &testT{BeginTime: "111", EndTime: "222"}
+
+		utilcode.MapToStruct(testM, t)
+
+		fmt.Println(t)
+
+		return
+
+		set := setcode.NewSet()
+		set.Add("test")
+		fmt.Println(set.Has("test"))
+
+		ss := []string{"jibw", "ji", "jp", "bw", "jibw"}
+		res := greedycode.MinDicOrder(ss)
+		fmt.Println(res)
+		return
+
+		ss = []string{"ba", "b"}
+		res = greedycode.MinDicOrder(ss)
+		fmt.Println(res)
+		return
+
+		ss = []string{"a", "ac", "ab"}
+		res = greedycode.MinDicOrder(ss)
+		fmt.Println(res)
+
+		// trietreecode.TrieTree.Nodes = append(trietreecode.TrieTree.Nodes, &trietreecode.TrieTreeNode{})
+		trietreecode.Insert("activity")
+		trietreecode.Insert("act")
+		trietreecode.Insert("acd")
+
+		fmt.Printf("TrieTree: %v \n", trietreecode.PreCount("ac"))
+		trietreecode.Del("act")
+		fmt.Printf("TrieTree: %v \n", trietreecode.PreCount("ac"))
+		trietreecode.Del("activity")
+		fmt.Printf("TrieTree: %v \n", trietreecode.PreCount("ac"))
+
+		return
+
+		root := treecode.CreateCST(3)
+		treecode.PrintCst(root)
+		return
+
+		head := linklistcode.InitRandomList([]int{3, 1, 7, 8, 6, 2, 4})
+		headCopy := linklistcode.RandomNodeCopy(head)
+		for head != nil && headCopy != nil {
+
+			if head.Val != headCopy.Val || (head.Random != nil && headCopy.Random != nil && head.Random.Val != headCopy.Random.Val) {
+				fmt.Println(false)
+				break
+			}
+			head = head.Next
+			headCopy = headCopy.Next
 		}
+		// return
 
-		head := linklistcode.InitLinkList(arrOri)
-		h := head
-		for i := len(arrOri) - 1; i >= 0 && h != nil; i-- {
+		/*正则过滤*/
+		//s := ":请=求,错/误\n\r\t fsfafdf"
+		////	reg, _ := regexp.Compile(regStr)
+		//ss := RegFilter(s, regStr)
+		//fmt.Println(ss)
+		//return
 
-			if h.Value != arrOri[i] {
+		/*链表回文判断*/
+		//arr := []int{1}
+		//h := linklistcode.InitLinkList(arr)
+		//fmt.Println(linklistcode.IsPalindrome(h))
+		//return
+
+		/*排序*/
+		arrTmp := utilcode.GenerateRandomArray(10, 30)
+		fmt.Println(arrTmp)
+		sortcode.Divide2(arrTmp, 5)
+		fmt.Println(arrTmp)
+
+		testTime := 500000
+		maxSize := 10
+		maxValue := 100
+		succeed := true
+
+		var arr1, arr2, arrOri []int
+		var f func([]int)
+		defer func() {
+			if err := recover(); err != nil {
+				fmt.Println(err)
+				fmt.Println("arrOri: ", arrOri)
+			}
+		}()
+		for i := 0; i < testTime; i++ {
+			arr1 = utilcode.GenerateRandomArray(maxSize, maxValue)
+			arr2 = utilcode.CopyArray(arr1)
+			arrOri = utilcode.CopyArray(arr1)
+			//sortcode.InsertSort(arr1)
+			// sortcode.SelectSort(arr1)
+			// sortcode.MergeSort(arr1)
+			//sortcode.HeapSort(arr1)
+			// sortcode.BubbleSort(arr1)
+			//f = sortcode.QuickSort
+			//f(arr1)
+			//f = sortcode.CountSort
+			f = sortcode.RadixSort
+			f(arr1)
+			sort.Ints(arr2)
+			if !utilcode.IsEqual(arr1, arr2) {
 				succeed = false
 				break
 			}
-			h = h.Next
-		}
 
-		// 反转
-		rh := linklistcode.ReserveLinkList(head)
-		for i := 0; i < len(arrOri) && rh != nil; i++ {
+			head := linklistcode.InitLinkList(arrOri)
+			h := head
+			for i := len(arrOri) - 1; i >= 0 && h != nil; i-- {
 
-			if rh.Value != arrOri[i] {
-				succeed = false
-				break
+				if h.Value != arrOri[i] {
+					succeed = false
+					break
+				}
+				h = h.Next
 			}
-			rh = rh.Next
+
+			// 反转
+			rh := linklistcode.ReserveLinkList(head)
+			for i := 0; i < len(arrOri) && rh != nil; i++ {
+
+				if rh.Value != arrOri[i] {
+					succeed = false
+					break
+				}
+				rh = rh.Next
+			}
+
+			fmt.Println("------------")
+			head = linklistcode.InitTwoWayLinkList(arrOri)
+			fmt.Println(arrOri)
+			h = head.Next
+			var end *linklistcode.Node
+			for h != nil {
+				fmt.Printf("%v ", h.Value)
+				end = h
+				h = h.Next
+			}
+			fmt.Println()
+			for end != nil && end != head {
+				fmt.Printf("%v ", end.Value)
+				end = end.Pre
+			}
+
+			fmt.Println("\n------------")
+			newHead := linklistcode.ReserveTwoWayLinkList(head)
+			nh := newHead
+			var nhEnd *linklistcode.Node
+			for nh != nil {
+				fmt.Printf("%v ", nh.Value)
+				nhEnd = nh
+				nh = nh.Next
+			}
+			fmt.Println()
+			for nhEnd != nil {
+				fmt.Printf("%v ", nhEnd.Value)
+				nhEnd = nhEnd.Pre
+			}
+		}
+		if succeed {
+			fmt.Println("Nice")
+		} else {
+			fmt.Println("Fucking")
+
+			fmt.Println(arrOri)
+			fmt.Println(arr1)
+			fmt.Println(arr2)
+
+			// 单步调试
+			f(arrOri)
 		}
 
-		fmt.Println("------------")
-		head = linklistcode.InitTwoWayLinkList(arrOri)
-		fmt.Println(arrOri)
-		h = head.Next
-		var end *linklistcode.Node
-		for h != nil {
-			fmt.Printf("%v ", h.Value)
-			end = h
-			h = h.Next
-		}
-		fmt.Println()
-		for end != nil && end != head {
-			fmt.Printf("%v ", end.Value)
-			end = end.Pre
-		}
-
-		fmt.Println("\n------------")
-		newHead := linklistcode.ReserveTwoWayLinkList(head)
-		nh := newHead
-		var nhEnd *linklistcode.Node
-		for nh != nil {
-			fmt.Printf("%v ", nh.Value)
-			nhEnd = nh
-			nh = nh.Next
-		}
-		fmt.Println()
-		for nhEnd != nil {
-			fmt.Printf("%v ", nhEnd.Value)
-			nhEnd = nhEnd.Pre
-		}
 	}
-	if succeed {
-		fmt.Println("Nice")
-	} else {
-		fmt.Println("Fucking")
-
-		fmt.Println(arrOri)
-		fmt.Println(arr1)
-		fmt.Println(arr2)
-
-		// 单步调试
-		f(arrOri)
-	}
-
 }
