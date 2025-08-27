@@ -1423,23 +1423,23 @@
             "config":[
                 {
                     "reward_level":1,
-                    "daily_gift_income":7500,
-                    "daily_gift_reward_diamond":3000
+                    "daily_gift_income":4000,
+                    "daily_gift_reward_diamond":800
                 },
                 {
                     "reward_level":2,
-                    "daily_gift_income":22500,
-                    "daily_gift_reward_diamond":10000
+                    "daily_gift_income":12000,
+                    "daily_gift_reward_diamond":2400
                 },
                 {
                     "reward_level":3,
-                    "daily_gift_income":37500,
-                    "daily_gift_reward_diamond":20000
+                    "daily_gift_income":30000,
+                    "daily_gift_reward_diamond":6000
                 },
                 {
                     "reward_level":4,
-                    "daily_gift_income":75000,
-                    "daily_gift_reward_diamond":42000
+                    "daily_gift_income":50000,
+                    "daily_gift_reward_diamond":12500
                 }
             ]
         },
@@ -1448,33 +1448,23 @@
             "config":[
                 {
                     "reward_level":1,
-                    "daily_gift_income":5000,
-                    "daily_gift_reward_diamond":2000
+                    "daily_gift_income":10000,
+                    "daily_gift_reward_diamond":5000
                 },
                 {
                     "reward_level":2,
-                    "daily_gift_income":10000,
-                    "daily_gift_reward_diamond":4000
+                    "daily_gift_income":30000,
+                    "daily_gift_reward_diamond":15000
                 },
                 {
                     "reward_level":3,
-                    "daily_gift_income":25000,
-                    "daily_gift_reward_diamond":10000
+                    "daily_gift_income":60000,
+                    "daily_gift_reward_diamond":30000
                 },
                 {
                     "reward_level":4,
-                    "daily_gift_income":40000,
-                    "daily_gift_reward_diamond":16000
-                },
-                {
-                    "reward_level":5,
-                    "daily_gift_income":60000,
-                    "daily_gift_reward_diamond":24000
-                },
-                {
-                    "reward_level":6,
                     "daily_gift_income":100000,
-                    "daily_gift_reward_diamond":40000
+                    "daily_gift_reward_diamond":55000
                 }
             ]
         },
@@ -1483,23 +1473,23 @@
             "config":[
                 {
                     "reward_level":1,
-                    "daily_gift_income":7500,
-                    "daily_gift_reward_diamond":3000
+                    "daily_gift_income":3000,
+                    "daily_gift_reward_diamond":1200
                 },
                 {
                     "reward_level":2,
-                    "daily_gift_income":22500,
-                    "daily_gift_reward_diamond":10000
+                    "daily_gift_income":5000,
+                    "daily_gift_reward_diamond":2000
                 },
                 {
                     "reward_level":3,
-                    "daily_gift_income":37500,
-                    "daily_gift_reward_diamond":20000
+                    "daily_gift_income":10000,
+                    "daily_gift_reward_diamond":4000
                 },
                 {
                     "reward_level":4,
-                    "daily_gift_income":75000,
-                    "daily_gift_reward_diamond":42000
+                    "daily_gift_income":25000,
+                    "daily_gift_reward_diamond":10000
                 }
             ]
         },
@@ -1508,33 +1498,23 @@
             "config":[
                 {
                     "reward_level":1,
-                    "daily_gift_income":5000,
-                    "daily_gift_reward_diamond":2000
+                    "daily_gift_income":4000,
+                    "daily_gift_reward_diamond":600
                 },
                 {
                     "reward_level":2,
-                    "daily_gift_income":10000,
-                    "daily_gift_reward_diamond":4000
+                    "daily_gift_income":15000,
+                    "daily_gift_reward_diamond":2250
                 },
                 {
                     "reward_level":3,
-                    "daily_gift_income":25000,
-                    "daily_gift_reward_diamond":10000
+                    "daily_gift_income":30000,
+                    "daily_gift_reward_diamond":6000
                 },
                 {
                     "reward_level":4,
-                    "daily_gift_income":40000,
-                    "daily_gift_reward_diamond":16000
-                },
-                {
-                    "reward_level":5,
-                    "daily_gift_income":60000,
-                    "daily_gift_reward_diamond":24000
-                },
-                {
-                    "reward_level":6,
-                    "daily_gift_income":100000,
-                    "daily_gift_reward_diamond":40000
+                    "daily_gift_income":50000,
+                    "daily_gift_reward_diamond":10000
                 }
             ]
         },
@@ -1543,23 +1523,23 @@
             "config":[
                 {
                     "reward_level":1,
-                    "daily_gift_income":7500,
-                    "daily_gift_reward_diamond":3000
+                    "daily_gift_income":16000,
+                    "daily_gift_reward_diamond":6400
                 },
                 {
                     "reward_level":2,
-                    "daily_gift_income":22500,
-                    "daily_gift_reward_diamond":10000
+                    "daily_gift_income":48000,
+                    "daily_gift_reward_diamond":19200
                 },
                 {
                     "reward_level":3,
-                    "daily_gift_income":37500,
-                    "daily_gift_reward_diamond":20000
+                    "daily_gift_income":96000,
+                    "daily_gift_reward_diamond":38400
                 },
                 {
                     "reward_level":4,
-                    "daily_gift_income":75000,
-                    "daily_gift_reward_diamond":42000
+                    "daily_gift_income":160000,
+                    "daily_gift_reward_diamond":64000
                 }
             ]
         },
@@ -1569,37 +1549,57 @@
                 {
                     "reward_level":1,
                     "daily_gift_income":5000,
-                    "daily_gift_reward_diamond":2000
+                    "daily_gift_reward_diamond":750
                 },
                 {
                     "reward_level":2,
                     "daily_gift_income":10000,
-                    "daily_gift_reward_diamond":4000
+                    "daily_gift_reward_diamond":1500
                 },
                 {
                     "reward_level":3,
                     "daily_gift_income":25000,
-                    "daily_gift_reward_diamond":10000
+                    "daily_gift_reward_diamond":3750
                 },
                 {
                     "reward_level":4,
-                    "daily_gift_income":40000,
-                    "daily_gift_reward_diamond":16000
-                },
-                {
-                    "reward_level":5,
-                    "daily_gift_income":60000,
-                    "daily_gift_reward_diamond":24000
-                },
-                {
-                    "reward_level":6,
-                    "daily_gift_income":100000,
-                    "daily_gift_reward_diamond":40000
+                    "daily_gift_income":50000,
+                    "daily_gift_reward_diamond":7500
                 }
             ]
         },
         {
             "region":"TH",
+            "config":[
+                {
+                    "reward_level":1,
+                    "daily_gift_income":3000,
+                    "daily_gift_reward_diamond":1200
+                },
+                {
+                    "reward_level":2,
+                    "daily_gift_income":5000,
+                    "daily_gift_reward_diamond":2000
+                },
+                {
+                    "reward_level":3,
+                    "daily_gift_income":10000,
+                    "daily_gift_reward_diamond":4000
+                },
+                {
+                    "reward_level":4,
+                    "daily_gift_income":25000,
+                    "daily_gift_reward_diamond":10000
+                },
+                {
+                    "reward_level":5,
+                    "daily_gift_income":50000,
+                    "daily_gift_reward_diamond":20000
+                }
+            ]
+        },
+        {
+            "region":"FR",
             "config":[
                 {
                     "reward_level":1,
@@ -1620,41 +1620,6 @@
                     "reward_level":4,
                     "daily_gift_income":75000,
                     "daily_gift_reward_diamond":42000
-                }
-            ]
-        },
-        {
-            "region":"FR",
-            "config":[
-                {
-                    "reward_level":1,
-                    "daily_gift_income":5000,
-                    "daily_gift_reward_diamond":2000
-                },
-                {
-                    "reward_level":2,
-                    "daily_gift_income":10000,
-                    "daily_gift_reward_diamond":4000
-                },
-                {
-                    "reward_level":3,
-                    "daily_gift_income":25000,
-                    "daily_gift_reward_diamond":10000
-                },
-                {
-                    "reward_level":4,
-                    "daily_gift_income":40000,
-                    "daily_gift_reward_diamond":16000
-                },
-                {
-                    "reward_level":5,
-                    "daily_gift_income":60000,
-                    "daily_gift_reward_diamond":24000
-                },
-                {
-                    "reward_level":6,
-                    "daily_gift_income":100000,
-                    "daily_gift_reward_diamond":40000
                 }
             ]
         }

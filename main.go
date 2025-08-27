@@ -4,6 +4,7 @@ import (
 	"c1/enumcode"
 	"c1/greedycode"
 	"c1/linklistcode"
+	demo "c1/misc"
 	"c1/misccode"
 	"c1/queuecode"
 	"c1/setcode"
@@ -12,19 +13,30 @@ import (
 	"c1/trietreecode"
 	"c1/utilcode"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"hash/crc32"
 	"io/ioutil"
+	"math"
+	"net/http"
+	"net/url"
 	"os"
 	"reflect"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 	"unsafe"
 
 	"context"
+
+	"github.com/panjf2000/ants/v2"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"golang.org/x/exp/rand"
+	"gopkg.in/yaml.v2"
 )
 
 // const regStr = "[:=, \r\n\t/]"
@@ -278,8 +290,938 @@ func sender(ch chan int) {
 type MyObject struct {
 	Number int
 }
+type taskFunc func()
+
+func taskFuncWrapper(i int, wg *sync.WaitGroup) taskFunc {
+	return func() {
+		fmt.Printf("task:%d\n", i)
+		wg.Done()
+	}
+}
+func Hash(uin uint64) uint16 {
+
+	hash64 := uin
+	hi32 := uint32(hash64 >> 32)
+	lo32 := uint32(hash64 & 0xFFFFFFFF)
+
+	hash32 := hi32 ^ lo32
+	hash32 *= 2654435761
+
+	hi16 := uint16(hash32 >> 16)
+	lo16 := uint16(hash32 & 0xFFFF)
+
+	hash16 := hi16 ^ lo16
+	hash16 *= 40503 // gold ratio
+	return hash16
+}
+func Unit(uin uint64) uint16 {
+	return Hash(uin) % 8192
+}
+
+const (
+	kCurrencyRecordDBNum       = 4
+	kCurrencyRecordTableNum    = 64
+	kCurrencyRecordInstanceNum = 2
+)
+
+type GenVideoTradingData struct {
+	CoinsChangedAmount    int64 `json:"coins_changed_amount"`
+	SubCoinsChangedAmount int64 `json:"sub_coins_changed_amount"`
+	SubPeriodType         int32 `json:"sub_period_type"`
+}
+
+type GenVideoTradingRecord struct {
+	PayInfo    *GenVideoTradingData `json:"payment"`
+	RefundInfo *GenVideoTradingData `json:"refund_info"`
+}
+
+type Speaker interface {
+	S() string
+	P() int
+	E(int, string) float32
+}
+type A struct {
+}
+
+func (a A) S() string {
+	return "SA"
+}
+func (a A) P() int {
+	fmt.Println("AP")
+	return 0
+}
+func (a A) E(e1 int, e2 string) float32 {
+	fmt.Println("AE")
+	return 0.0
+}
+
+type B struct{}
+
+func (b B) S() string {
+
+	return "SB"
+}
+func (b B) P() int {
+	fmt.Println("BP")
+	return 1
+}
+func (b B) E(e1 int, e2 string) float32 {
+	fmt.Println("BE")
+	return 1.1
+}
+
+type C struct {
+	Speaker
+}
+
+func (c C) S() string {
+	fmt.Println("SC")
+	fmt.Println(c.Speaker.S())
+	return c.Speaker.S()
+}
+
+type Dog struct{}
+
+func (d Dog) Eat() {
+	fmt.Println("Dog eat!")
+}
+
+type SuperDog struct {
+	Dog
+}
+
+func (sd SuperDog) Eat() {
+	sd.Dog.Eat()
+	fmt.Println("SuperDog eat!")
+}
+
+func InArray(needle interface{}, haystack interface{}) (exists bool, index int) {
+	exists = false
+	index = -1
+
+	switch reflect.TypeOf(haystack).Kind() {
+	case reflect.Slice:
+		s := reflect.ValueOf(haystack)
+
+		for i := 0; i < s.Len(); i++ {
+			if reflect.DeepEqual(needle, s.Index(i).Interface()) == true {
+				index = i
+				exists = true
+				return
+			}
+		}
+	}
+
+	return
+}
+
+type CustomOption ants.Option
+
+func WithExpiryDuration(expiryDuration time.Duration) CustomOption {
+	return CustomOption(ants.WithExpiryDuration(expiryDuration))
+}
+func WithPreAlloc(preAlloc bool) CustomOption {
+	return CustomOption(ants.WithPreAlloc(preAlloc))
+}
+
+func TestPack(options ...CustomOption) {
+
+	opts := new(ants.Options)
+	for _, option := range options {
+		option(opts)
+	}
+	fmt.Printf("opts: %+v", opts)
+}
+
+var logHandle func(int, string)
+
+type PoolWorkingAdjustConfigT struct {
+	UpThreshold   int
+	UpCount       int
+	DownThreshold int
+	DownCount     int
+}
+
+type EventConfigOptionT struct {
+	PoolWorkingAdjustConfig *PoolWorkingAdjustConfigT
+}
+
+var (
+	// 定义一个 Histogram 用于收集上报值
+	valueGauge = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "example_value",
+			Help: "An example gauge that reports a random value every second.",
+		},
+		[]string{"source"},
+	)
+)
+
+func init() {
+	// 注册指标
+	prometheus.MustRegister(valueGauge)
+}
+
+// 模拟获取一个值的函数
+func getValue() float64 {
+	return rand.Float64() * 100 // 返回 0 到 100 之间的随机值
+}
+
+// 定义目标结构体
+type Person struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+type PersonMore struct {
+	Name    string `json:"name"`
+	Age     int    `json:"age"`
+	Class   int    `json:"class"`
+	Persons []*Person
+}
+
+type UserBasicUpdateModel struct {
+	Data []struct {
+		Uid           string `json:"uid"`
+		ShowId        string `json:"show_id"`
+		Nickname      string `json:"nickname"`
+		Gender        string `json:"gender"`
+		Avatar        string `json:"avatar"`
+		Birthday      string `json:"birthday"`
+		CreateTime    string `json:"create_time"`
+		Country       string `json:"country"`
+		Status        string `json:"status"`
+		Description   string `json:"description"`
+		Lang          string `json:"lang"`
+		Identity      string `json:"identity"`
+		Extend        string `json:"extend"`
+		UpdateTime    string `json:"update_time"`
+		VipLevel      string `json:"vip_level"`
+		CharmingLevel string `json:"charming_level"`
+		RiskControl   string `json:"risk_control"`
+	} `json:"data"`
+	Database  string      `json:"database"`
+	Es        int64       `json:"es"`
+	Gtid      interface{} `json:"gtid"`
+	Id        int         `json:"id"`
+	IsDdl     bool        `json:"isDdl"`
+	MysqlType struct {
+		Uid           string `json:"uid"`
+		ShowId        string `json:"show_id"`
+		Nickname      string `json:"nickname"`
+		Gender        string `json:"gender"`
+		Avatar        string `json:"avatar"`
+		Birthday      string `json:"birthday"`
+		CreateTime    string `json:"create_time"`
+		Country       string `json:"country"`
+		Status        string `json:"status"`
+		Description   string `json:"description"`
+		Lang          string `json:"lang"`
+		Identity      string `json:"identity"`
+		Extend        string `json:"extend"`
+		UpdateTime    string `json:"update_time"`
+		VipLevel      string `json:"vip_level"`
+		CharmingLevel string `json:"charming_level"`
+		RiskControl   string `json:"risk_control"`
+	} `json:"mysqlType"`
+	Old []struct {
+		Uid           string `json:"uid"`
+		ShowId        string `json:"show_id"`
+		Nickname      string `json:"nickname"`
+		Gender        string `json:"gender"`
+		Avatar        string `json:"avatar"`
+		Birthday      string `json:"birthday"`
+		CreateTime    string `json:"create_time"`
+		Country       string `json:"country"`
+		Status        string `json:"status"`
+		Description   string `json:"description"`
+		Lang          string `json:"lang"`
+		Identity      string `json:"identity"`
+		Extend        string `json:"extend"`
+		UpdateTime    string `json:"update_time"`
+		VipLevel      string `json:"vip_level"`
+		CharmingLevel string `json:"charming_level"`
+		RiskControl   string `json:"risk_control"`
+	} `json:"old"`
+	PkNames  []string `json:"pkNames"`
+	ServerId string   `json:"serverId"`
+	Sql      string   `json:"sql"`
+	SqlType  struct {
+		Uid           int `json:"uid"`
+		ShowId        int `json:"show_id"`
+		Nickname      int `json:"nickname"`
+		Gender        int `json:"gender"`
+		Avatar        int `json:"avatar"`
+		Birthday      int `json:"birthday"`
+		CreateTime    int `json:"create_time"`
+		Country       int `json:"country"`
+		Status        int `json:"status"`
+		Description   int `json:"description"`
+		Lang          int `json:"lang"`
+		Identity      int `json:"identity"`
+		Extend        int `json:"extend"`
+		UpdateTime    int `json:"update_time"`
+		VipLevel      int `json:"vip_level"`
+		CharmingLevel int `json:"charming_level"`
+		RiskControl   int `json:"risk_control"`
+	} `json:"sqlType"`
+	Table string `json:"table"`
+	Ts    int64  `json:"ts"`
+	Type  string `json:"type"`
+}
+
+func TestSlice(ss []string) {
+
+	ss[0] = "99"
+	// ss = append(ss, "2")
+	fmt.Printf("in: %p, val: %v, addr: %p, addr2: %p\n", ss, ss, &ss[0], &ss)
+}
+
+func getDigitCount(n int64) int {
+	if n == 0 {
+		return 1
+	}
+	if n < 0 {
+		n = -n // 处理负数
+	}
+	return int(math.Log10(float64(n))) + 1
+}
+
+func RoundWithPart(f float64, n int) (int64, int64, error) {
+	// 确认小数点之后要按多少位处理
+	fs := strconv.FormatFloat(f, 'f', -1, 64)
+	ss := strings.Split(fs, ".")
+	if len(ss) == 1 {
+		intPart, err := strconv.ParseInt(ss[0], 10, 64)
+		if err != nil {
+			return 0, 0, err
+		}
+		return intPart, 0, nil
+	}
+	if len(ss) != 2 {
+		return 0, 0, errors.New("小数不合法")
+	}
+
+	// 整数部分
+	intPart, err := strconv.ParseInt(ss[0], 10, 64)
+	if err != nil {
+		return 0, 0, err
+	}
+	// 小数部分
+	smallString := []byte{}
+	// 保留前3个小数
+	for i := 0; i < n; i++ {
+		if i < len(ss[1]) {
+			smallString = append(smallString, ss[1][i])
+		} else {
+			// 小数不足n位 则照常补齐
+			smallString = append(smallString, '0')
+		}
+	}
+	// 0倍 按0处理
+	if len(smallString) == 0 {
+		smallString = []byte("0")
+	}
+
+	smallPart, err := strconv.ParseInt(string(smallString), 10, 64)
+	if err != nil {
+		return 0, 0, err
+	}
+	return intPart, smallPart, nil
+}
+
+func RoundWithPartV2(f float64, n int) (int64, float64, error) {
+	if n < 0 {
+		return 0, 0, errors.New("n 不能为负")
+	}
+
+	scale := math.Pow(10, float64(n))
+	rounded := math.Round(f*scale) / scale
+
+	intPart := int64(rounded)
+	floatPart := math.Abs(rounded - float64(intPart)) // 始终返回正的小数部分
+
+	return intPart, floatPart, nil
+}
+
+/* 多模式字符串匹配算法 */
+type Node struct {
+	children map[rune]*Node
+	fail     *Node
+	output   []string
+}
+
+type AhoCorasick struct {
+	root *Node
+}
+
+func NewAhoCorasick() *AhoCorasick {
+	return &AhoCorasick{root: &Node{children: make(map[rune]*Node)}}
+}
+
+// 插入关键词
+func (ac *AhoCorasick) Insert(keyword string) {
+	node := ac.root
+	for _, ch := range keyword {
+		if node.children[ch] == nil {
+			node.children[ch] = &Node{children: make(map[rune]*Node)}
+		}
+		node = node.children[ch]
+	}
+	node.output = append(node.output, keyword)
+}
+
+// 构建失败指针
+func (ac *AhoCorasick) Build() {
+	queue := []*Node{}
+	for _, child := range ac.root.children {
+		child.fail = ac.root
+		queue = append(queue, child)
+	}
+
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+
+		for ch, child := range current.children {
+			fail := current.fail
+			for fail != nil && fail.children[ch] == nil {
+				fail = fail.fail
+			}
+			if fail != nil {
+				child.fail = fail.children[ch]
+			} else {
+				child.fail = ac.root
+			}
+			child.output = append(child.output, child.fail.output...)
+			queue = append(queue, child)
+		}
+	}
+}
+
+// 匹配文本
+func (ac *AhoCorasick) Search(text string) []string {
+	node := ac.root
+	results := []string{}
+
+	for _, ch := range text {
+		for node != ac.root && node.children[ch] == nil {
+			node = node.fail
+		}
+		if node.children[ch] != nil {
+			node = node.children[ch]
+		}
+		results = append(results, node.output...)
+	}
+	return results
+}
+
+func quickSort(arr []int, left, right int) {
+	if left >= right {
+		return
+	}
+	pivot := partition(arr, left, right)
+	quickSort(arr, left, pivot-1)
+	quickSort(arr, pivot+1, right)
+}
+
+func partition(arr []int, left, right int) int {
+	pivot := arr[right]
+	i := left
+	for j := left; j < right; j++ {
+		if arr[j] < pivot {
+			arr[i], arr[j] = arr[j], arr[i]
+			i++
+		}
+	}
+	arr[i], arr[right] = arr[right], arr[i]
+	return i
+}
+
+func minWindow(s string, t string) string {
+	md := map[byte]int{}
+	for i := 0; i < len(t); i++ {
+		md[t[i]]++
+	}
+	ms := map[byte]int{}
+	res := ""
+
+	minLen := math.MaxInt
+	for i, j := 0, 0; i <= j && j < len(s); {
+		if equal(ms, md) {
+			minLen = min(minLen, j-i+1)
+			if minLen == j-i+1 {
+				res = s[i:j]
+				fmt.Println(res)
+			}
+			ms[s[i]]--
+			i++
+		} else {
+			ms[s[j]]++
+			j++
+		}
+	}
+	return res
+}
+func equal(ms, md map[byte]int) bool {
+	for b, c := range md {
+		v, ok := ms[b]
+		if !(ok && v == c) {
+			return false
+		}
+	}
+	return true
+}
+
+func bindYamlData(data any, content []byte) error {
+
+	rt := reflect.TypeOf(data)
+	if rt.Kind() != reflect.Pointer {
+		return fmt.Errorf("data must be point")
+	}
+
+	re := reflect.New(rt.Elem())
+	err := yaml.Unmarshal(content, re.Interface())
+	if err != nil {
+		return err
+	}
+
+	reflect.ValueOf(data).Elem().Set(re.Elem())
+	return nil
+}
 
 func main() {
+	{
+
+		fmt.Println(minWindow("ADOBECODEBANC", "ABC"))
+	}
+	{
+		fmt.Println(fmt.Sprintf("%d", 1299976/86400))
+		// todo: 快速排序
+		arr := []int{1, 3, 2, 4, 5, 6, 7, 8, 9, 10}
+		quickSort(arr, 0, len(arr)-1)
+		fmt.Println(arr)
+	}
+	{
+		ac := NewAhoCorasick()
+		ac.Insert("he")
+		ac.Insert("she")
+		ac.Insert("his")
+		ac.Insert("hers")
+		ac.Build()
+
+		text := "ushers"
+		text = "h"
+		fmt.Println(ac.Search(text)) // 输出匹配的关键字
+	}
+	{
+		// intPart, smallPart, err := RoundWithPart(21.0065, 3)
+		intPart, smallPart, err := RoundWithPart(-21.65, 3)
+
+		if err != nil {
+			fmt.Println("err: ", err)
+		}
+		fmt.Printf("intPart: %v, smallPart: %v\n", intPart, smallPart)
+
+		intPartV2, smallPartV2, err := RoundWithPartV2(-21.65, 3)
+
+		if err != nil {
+			fmt.Println("err: ", err)
+		}
+		fmt.Printf("intPart: %v, smallPart: %f", intPartV2, smallPartV2)
+	}
+	{
+		var t []int32
+		fmt.Println(t == nil)
+		fmt.Println(len(t))
+		m := make(map[int]int, 0)
+		m[1] = 3
+		fmt.Println(m)
+	}
+	{
+		m := map[int]*PoolWorkingAdjustConfigT{}
+		for i := 0; i < 10; i++ {
+			m[i] = &PoolWorkingAdjustConfigT{UpCount: i}
+		}
+
+		if config, ok := m[1]; ok {
+			config.UpCount = 10000
+		}
+
+		for _, c := range m {
+			fmt.Println(c)
+		}
+
+	}
+	{
+		v := float64(10.011)
+		k1, k2 := math.Modf(v)
+		fmt.Println(k1, k2)
+	}
+	{
+		popularity := 10
+		extraStr := fmt.Sprintf("%07d", popularity)
+		extraNum, err := strconv.Atoi(extraStr)
+		if err != nil {
+			fmt.Println(err)
+		}
+		extraScore := float64(extraNum) / math.Pow(10, float64(len(extraStr)))
+		fmt.Println("score: ", extraScore)
+
+	}
+	{
+		extraScore := int64(100000)
+		fmt.Printf("%v\n", getDigitCount(extraScore))
+		fmt.Printf("%v\n", math.Pow(10, float64(getDigitCount(extraScore))))
+		fmt.Printf("%v\n", float64(extraScore)/math.Pow(10, float64(getDigitCount(extraScore))))
+
+	}
+	{
+		// 切片:https://mp.weixin.qq.com/s?__biz=MzUxMDI4MDc1NA==&mid=2247489302&idx=1&sn=c787d1fa4546e12c7e55e880da73c91f&scene=21#wechat_redirect
+		test1 := make([]string, 1, 10)
+		test1[0] = "1"
+		TestSlice(test1)
+		fmt.Printf("out: %p, val: %v, addr: %p, addr2: %p", test1, test1, &test1[0], &test1)
+	}
+	{
+		fmt.Printf("%d", 10*time.Second)
+	}
+	{
+		v := "{\"data\":[{\"uid\":\"100032\",\"show_id\":\"100032\",\"nickname\":\"姓名权倾\",\"gender\":\"0\",\"avatar\":\"image/3a36f1607a484d7bd300b11e67d7dd24\",\"birthday\":\"1178596800000\",\"create_time\":\"2024-04-09 00:00:00.0\",\"country\":\"HK\",\"status\":\"0\",\"description\":\"我的个人介绍\",\"lang\":\"en\",\"identity\":\"1\",\"extend\":\"{\\\"storage\\\":true,\\\"new_device\\\":true,\\\"notification\\\":true}\",\"update_time\":\"2024-12-02 12:44:49.0\",\"vip_level\":\"6\",\"charming_level\":\"0\",\"risk_control\":null}],\"database\":\"user\",\"es\":1733143489000,\"gtid\":null,\"id\":16058497,\"isDdl\":false,\"mysqlType\":{\"uid\":\"bigint\",\"show_id\":\"bigint\",\"nickname\":\"varchar\",\"gender\":\"tinyint\",\"avatar\":\"varchar\",\"birthday\":\"bigint\",\"create_time\":\"datetime\",\"country\":\"varchar\",\"status\":\"int\",\"description\":\"varchar\",\"lang\":\"varchar\",\"identity\":\"tinyint\",\"extend\":\"json\",\"update_time\":\"datetime\",\"vip_level\":\"int\",\"charming_level\":\"int\",\"risk_control\":\"json\"},\"old\":[{\"uid\":\"100032\",\"show_id\":\"100032\",\"nickname\":\"姓名权倾\",\"gender\":\"0\",\"avatar\":\"image/3a36f1607a484d7bd300b11e67d7dd24\",\"birthday\":\"1178596800000\",\"create_time\":\"2024-04-09 00:00:00.0\",\"country\":\"HK\",\"status\":\"0\",\"description\":\"我的个人介绍\",\"lang\":\"zh_CN\",\"identity\":\"1\",\"extend\":\"{\\\"storage\\\":true,\\\"new_device\\\":true,\\\"notification\\\":true}\",\"update_time\":\"2024-11-27 11:21:26.0\",\"vip_level\":\"6\",\"charming_level\":\"0\",\"risk_control\":null}],\"pkNames\":[\"uid\"],\"serverId\":\"101841996\",\"sql\":\"\",\"sqlType\":{\"uid\":8,\"show_id\":8,\"nickname\":253,\"gender\":1,\"avatar\":253,\"birthday\":8,\"create_time\":12,\"country\":254,\"status\":3,\"description\":253,\"lang\":253,\"identity\":1,\"extend\":245,\"update_time\":12,\"vip_level\":3,\"charming_level\":3,\"risk_control\":245},\"table\":\"user_basic\",\"ts\":1733143489342,\"type\":\"UPDATE\"}"
+
+		var userBasicEvent UserBasicUpdateModel
+		err := json.Unmarshal([]byte(v), &userBasicEvent)
+		if err != nil {
+			fmt.Println("err: ", err)
+		}
+		fmt.Printf("struct: %+v", userBasicEvent)
+	}
+	{
+		m := map[string]int{"0": 0, "1": 2, "3": 4}
+		fmt.Printf("m: %v", m[""])
+	}
+	{
+		var p PersonMore
+		p.Persons = append(p.Persons, &Person{Name: "77", Age: 99})
+		pp, err := json.Marshal(p)
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
+
+		var pt PersonMore
+		err = json.Unmarshal(pp, &pt)
+		if err != nil {
+			fmt.Printf("err: %v", err)
+		}
+		for _, v := range pt.Persons {
+			if v.Name == "77" && v.Age == 99 {
+				v.Name = "88"
+				v.Age = 100
+			}
+		}
+		pt.Persons = append(pt.Persons, &Person{Name: "999", Age: 999})
+
+		ppt, err := json.Marshal(pt)
+		if err != nil {
+			fmt.Printf("err: %v", err)
+		}
+
+		fmt.Println("ppt", string(ppt))
+	}
+	{
+		tP := []*PersonMore{
+			{
+				Name:  "1",
+				Age:   2,
+				Class: 3,
+			},
+			{
+				Name:  "2",
+				Age:   3,
+				Class: 4,
+			},
+		}
+		tt, err := json.Marshal(tP)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("tt: ", string(tt))
+
+		var tp1 []*PersonMore
+		err = json.Unmarshal(tt, &tp1)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("tp1: ", tp1[0].Name, tp1[1].Name)
+
+	}
+	{
+		for i := 0; i < 10; i++ {
+			fmt.Println(time.Now().UnixNano())
+		}
+	}
+	{
+		fmt.Println(fmt.Sprint(8))
+	}
+	{
+		commonInfo := map[string]interface{}{"1": 3}
+		for k, v := range commonInfo {
+			fmt.Println(k, v)
+		}
+	}
+	{
+		// 创建 map
+		data := map[string]interface{}{
+			"name":  "Alice",
+			"age":   30,
+			"class": 3,
+		}
+		delete(data, "name")
+		//data := PersonMore{
+		//	Name:  "jack",
+		//	Age:   99,
+		//	Class: 88,
+		//}
+		//var ok bool
+		//var k interface{}
+		//data.Age = k.(int)
+		//// data.Age, ok = k.(int)
+		//fmt.Println("ok", ok)
+
+		// 将 map 转换为 JSON 字符串
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			fmt.Println("Error marshalling JSON:", err)
+			return
+		}
+
+		// 将 JSON 解码到结构体
+		var person Person
+		if err := json.Unmarshal(jsonData, &person); err != nil {
+			fmt.Println("Error unmarshalling JSON:", err)
+			return
+		}
+
+		fmt.Println("结构体:", person)
+	}
+	{
+		rand.Seed(uint64(time.Now().UnixNano()))
+
+		// 设置 HTTP 路由
+		http.Handle("/metrics", promhttp.Handler())
+
+		// 启动 HTTP 服务器
+		go func() {
+			defer func() {
+				fmt.Println("8888888")
+			}()
+			if err := http.ListenAndServe(":8080", nil); err != nil {
+				panic(err)
+			}
+		}()
+
+		// 创建一个定时器，每秒获取一个值并上报
+		ticker := time.NewTicker(1 * time.Second)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			// value := getValue()
+			valueGauge.WithLabelValues("random_source").Set(1988) // 上报值
+		}
+	}
+	{
+		var testm map[string]string
+		if v, ok := testm["1"]; ok {
+			fmt.Println("v: ", v)
+		}
+	}
+	{
+		// 初始化配置
+		opts := &EventConfigOptionT{
+			PoolWorkingAdjustConfig: &PoolWorkingAdjustConfigT{
+				UpThreshold:   80,
+				UpCount:       10,
+				DownThreshold: 30,
+				DownCount:     5,
+			},
+		}
+		// 新的配置
+		poolWorkingAdjustConfig := PoolWorkingAdjustConfigT{
+			UpThreshold:   85,
+			UpCount:       15,
+			DownThreshold: 25,
+			DownCount:     7,
+		}
+		// 使用解引用赋值
+		*(opts.PoolWorkingAdjustConfig) = poolWorkingAdjustConfig
+		// 打印结果
+		fmt.Println("Updated PoolWorkingAdjustConfig:", opts.PoolWorkingAdjustConfig)
+		poolWorkingAdjustConfig.DownCount = 17
+		fmt.Println("Updated PoolWorkingAdjustConfig:", opts.PoolWorkingAdjustConfig)
+		fmt.Println("Updated PoolWorkingAdjustConfig3:", poolWorkingAdjustConfig)
+
+	}
+	{
+		logHandle(1, "ss")
+	}
+	{
+		pri := demo.NewPrivate()
+		pri.TestPricvate()
+	}
+	{
+		TestPack(WithExpiryDuration(1300*time.Second), WithPreAlloc(true))
+	}
+	{
+		inArray, _ := InArray("JP", []string{"", "JP"})
+		fmt.Printf("inArray: %v\n", inArray)
+	}
+	{
+		fmt.Println(strings.Contains("https://image-test.appparty.net/web-ai-image/20240828b36466fc6f6b1724837536942ad8b.JPEG", "http"))
+	}
+	{
+		sd := SuperDog{}
+		sd.Eat()
+	}
+	{
+		c := C{B{}}
+		c.S()
+		c.P()
+
+	}
+	{
+		refundRecord, err := json.Marshal(&GenVideoTradingData{CoinsChangedAmount: 1, SubCoinsChangedAmount: 3, SubPeriodType: 5})
+		if err != nil {
+			fmt.Println("err:", err)
+		}
+		fmt.Println("refundRecord: ", string(refundRecord))
+
+		test := "{\"refund_info\":{\"sub_period_type\":5,\"coins_changed_amount\":1,\"sub_coins_changed_amount\":3}}"
+		genVideoTradingRecord := GenVideoTradingRecord{}
+		err = json.Unmarshal([]byte(test), &genVideoTradingRecord)
+		if err != nil {
+			fmt.Println("err2:", err)
+		}
+		fmt.Println("genVideoTradingRecord: ", genVideoTradingRecord)
+
+	}
+	{
+		var intf interface{}
+
+		if intf == nil {
+			fmt.Println("intf", intf)
+		}
+		if tt, ok := intf.(bool); ok {
+			fmt.Println("11111", tt)
+		}
+	}
+	{
+		m, err := utilcode.GenUserSig(20010493, "13df58e129c5b4b3cfdec477007918206558d45e10cc8bbc13412bb7beccf3f5", "administrator", 3600)
+		if err != nil {
+			fmt.Printf("err: %v", err)
+		}
+		fmt.Printf("m: %v", m)
+
+	}
+	{
+		test := []string{"333", "gdgsd"}
+		fmt.Println(strings.Join(test, ","))
+	}
+	{
+
+	}
+	{
+		word := "apple"
+		trie := trietreecode.Constructor()
+		trie.Insert(word)
+		fmt.Println(trie.Search(word))
+	}
+	{
+		word := "apple"
+		for i := 0; i < len(word); i++ {
+			fmt.Println(word[i] - 'a')
+		}
+	}
+	{
+		i := int64(5)
+		fmt.Println(float64(i) / 100)
+	}
+
+	{
+		var test map[int][]int
+		fmt.Println(test == nil)
+		fmt.Println(len(test[1]))
+	}
+	{
+		fmt.Println(float64(40) / 100)
+
+	}
+	{
+		var m map[int]int
+		x := 1
+		if _, ok := m[x]; !ok && len(m) > 0 {
+			fmt.Println("tt", ok)
+		}
+	}
+	{
+		test := make([]int, 0, 10)
+		for i := 0; i < 10; i++ {
+			test = append(test, i)
+		}
+		fmt.Printf("len test %v", len(test))
+		fmt.Printf("len test1 %v", len(test[1:5]))
+
+	}
+	{
+		unit := int(Unit(uint64(36145196)))
+		tableVal := unit % (kCurrencyRecordDBNum * kCurrencyRecordTableNum)
+		dbId := tableVal / kCurrencyRecordTableNum
+		tableId := tableVal % kCurrencyRecordTableNum
+		fmt.Printf("dbId: %v, tableId: %v", dbId, tableId)
+
+	}
+	{
+		ov, err := url.QueryUnescape("\b\x83\xf86\x10\x83\xf86\x18\x90\xaf\x86\xac\x9e/(\x01B\x02QAp\x13\x88\x01\x01")
+		if err != nil {
+			fmt.Println("err1: ", err)
+		}
+		fmt.Println(string(ov))
+		//usr := &pb.UserBasicInfo{}
+		//if err = proto.Unmarshal([]byte(ov), usr); err != nil {
+		//	fmt.Println("err2: ", err)
+		//}
+		//fmt.Println(usr)
+
+	}
+	{
+		slice := make([]int, 0, 30)
+		slice2 := make([]int, 0, 30)
+		slice3 := slice
+
+		slice = append(slice, 3)
+		slice = append(slice, 3)
+		slice = append(slice, 10)
+		slice = append(slice, 3)
+		slice = append(slice, 3)
+		slice = append(slice, 3)
+		fmt.Println(len(slice))
+
+		fmt.Println(len(slice[:3]))
+		slice2 = append(slice[:1], make([]int, 6-len(slice[:1]))...)
+
+		fmt.Println(slice2)
+		fmt.Println(slice3)
+
+	}
+	{
+		p, _ := ants.NewPool(10)
+		defer p.Release()
+
+		var wg sync.WaitGroup
+		for i := 0; i < 20; i++ {
+			wg.Add(1)
+			p.Submit(taskFuncWrapper(i, &wg))
+		}
+		wg.Wait()
+	}
 	{
 		// 创建一个对象池
 		pool := &sync.Pool{

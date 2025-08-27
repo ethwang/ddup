@@ -171,6 +171,7 @@
        2. 长度
        3. 容量
     2. 扩容
+    3. 值传递:将结构体中的长度容量和指针进行传递;[参考](https://mp.weixin.qq.com/s?__biz=MzUxMDI4MDc1NA==&mid=2247489302&idx=1&sn=c787d1fa4546e12c7e55e880da73c91f&scene=21#wechat_redirect
   [参考](https://halfrost.com/go_slice/)
 
 11. 基于信号的抢占式调度原理
